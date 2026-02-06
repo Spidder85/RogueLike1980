@@ -1,0 +1,70 @@
+package presentation;
+
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.graphics.TextGraphics;
+import domain.Item;
+import domain.ItemType;
+import domain.game.GameSession;
+import settings.GameSettings;
+
+public class StatsPanel {
+    private final TextGraphics g;
+    private final int x;
+    private final int y;
+
+    public StatsPanel(TextGraphics g, int x, int y) {
+        this.g = g;
+        this.x = x;
+        this.y = y;
+    }
+
+    public void renderStatusLog(StatusLog log) {
+        int y = GameSettings.GAME_HEIGHT + 3;
+        g.setForegroundColor(new TextColor.RGB(127,127,127));
+
+        g.putString(0, y++, "  ────────────────────────────────────────");
+        for (String line : log.getLines()) {
+            g.putString(2, y++, line);
+        }
+    }
+
+    public void render(GameSession session) {
+        int yy = y;
+        g.setForegroundColor(new TextColor.RGB(127,127,127));
+        g.putString(x, yy++, "=== СТАТИСТИКА ===");
+        g.putString(x, yy++, "Сокровища: " + session.getStats().getTreasure());
+        g.putString(x, yy++, "Уровень: " + session.getStats().getMaxLevel());
+        g.putString(x, yy++, "Врагов: " + session.getStats().getEnemiesKilled());
+        g.putString(x, yy++, "Еда: " + session.getStats().getFoodEaten());
+        g.putString(x, yy++, "Эликсиры: " + session.getStats().getElixirsDrunk());
+        g.putString(x, yy++, "Свитки: " + session.getStats().getScrollsRead());
+        g.putString(x, yy++, "Шаги: " + session.getStats().getSteps());
+
+        yy++;
+        g.putString(x, yy++, "=== Игрок ===");
+        g.putString(x, yy++, "Здоровье: " + session.getPlayer().getHealth() + "/" + session.getPlayer().getMaxHealth());
+        g.putString(x, yy++, "Ловкость: " + session.getPlayer().getAgility());
+        g.putString(x, yy++, "Сила: " + session.getPlayer().getStrength());
+        g.putString(x, yy++, "Оружие: " + session.getPlayer().getCurrentWeapon());
+
+        yy++;
+        g.putString(x, yy++, "=== Инвентарь ===");
+        g.putString(x, yy++, "Еда: " + session.getPlayer().getBackpack().getItems(ItemType.FOOD).size());
+        g.putString(x, yy++, "Эликсиры: " + session.getPlayer().getBackpack().getItems(ItemType.ELIXIR).size());
+        g.putString(x, yy++, "Свитки: " + session.getPlayer().getBackpack().getItems(ItemType.SCROLL).size());
+        g.putString(x, yy++, "Оружие: " + session.getPlayer().getBackpack().getItems(ItemType.WEAPON).size());
+        g.putString(x, yy++, "Золото: " + session.getPlayer().getBackpack().getTreasureAmount());
+
+        yy++;
+        g.putString(x, yy++, "=== Меню ===");
+        g.putString(x, yy++,"Controls:");
+        g.putString(x, yy++,"W/A/S/D - Move");
+        g.putString(x, yy++,"H - Use Weapon");
+        g.putString(x, yy++,"J - Use Food");
+        g.putString(x, yy++,"K - Use Elixir");
+        g.putString(x, yy++,"E - Use Scroll");
+        g.putString(x, yy++,"Q - Quit");
+
+
+    }
+}

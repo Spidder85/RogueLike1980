@@ -1,0 +1,70 @@
+plugins {
+    java
+    application
+}
+
+group = "com.roguelike"
+version = "1.0"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Правильный синтаксис для файловых зависимостей в Kotlin DSL
+    implementation(fileTree("lib") {
+        include("*.jar")
+    })
+
+    // Для JSON
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // Для тестов
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+application {
+    mainClass.set("presentation.GameApplication")
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+// Настраиваем путь к нативным библиотекам
+tasks.named<JavaExec>("run") {
+    systemProperty("java.library.path", "lib")
+}
+
+// **Создаем отдельную задачу для сборки нативных библиотек под Windows и Linux**
+tasks.register<Copy>("prepareNativeLibs") {
+    from("lib") // исходная папка с dll/so
+    into("build/libs") // куда копировать
+    include("*.dll", "*.so")
+}
+
+tasks.named("build") {
+    dependsOn("prepareNativeLibs")
+}
+
+tasks.named("distZip") {
+    dependsOn("prepareNativeLibs")
+}
+
+tasks.named("distTar") {
+    dependsOn("prepareNativeLibs")
+}
+
+tasks.named("startScripts") {
+    dependsOn("prepareNativeLibs")
+}
