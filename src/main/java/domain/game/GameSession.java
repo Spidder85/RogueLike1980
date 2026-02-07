@@ -1,12 +1,12 @@
 package domain.game;
 
-import domain.character.Character;
+import domain.character.Player;
 import domain.map.Level;
 import presentation.StatusLog;
 import settings.GameSettings;
 
 public class GameSession {
-    private final Character player;
+    private final Player player;
     private final GameStats stats = new GameStats();
     private Level currentLevel;
     private boolean gameOver;
@@ -14,11 +14,11 @@ public class GameSession {
 
     private final StatusLog statusLog = new StatusLog(GameSettings.STATUS_LOG_SIZE);
 
-    public GameSession(Character player) {
+    public GameSession(Player player) {
         this.player = player;
     }
 
-    public Character getPlayer() {
+    public Player getPlayer() {
         return player;
     }
     public Level getCurrentLevel() {

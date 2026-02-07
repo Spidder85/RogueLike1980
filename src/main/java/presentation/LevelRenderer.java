@@ -4,13 +4,13 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
 import domain.Item;
+import domain.character.Player;
 import domain.common.Position;
 import domain.enemy.Enemy;
 import domain.game.GameSession;
 import domain.map.Corridor;
 import domain.map.Level;
 import domain.map.Room;
-import domain.character.Character;
 
 import settings.GameSettings;
 
@@ -21,7 +21,7 @@ public class LevelRenderer {
     public final FogOfWar fog;
     private final StatsPanel stats;
 
-    private final boolean iconMode = GameSettings.ICON_MODE;
+    //private final boolean iconMode = GameSettings.ICON_MODE;
 
     public LevelRenderer(Screen screen) {
         this.screen = screen;
@@ -40,7 +40,7 @@ public class LevelRenderer {
     public void render(Level level, GameSession session) {
         screen.clear();
 
-        Character player = session.getPlayer();
+        Player player = session.getPlayer();
         fog.computeVisibility(player, GameSettings.FOG_RADIUS, level);
 
         drawRooms(level, player);
@@ -54,7 +54,7 @@ public class LevelRenderer {
         stats.render(session);
     }
 
-    private void drawRooms(Level level, Character player) {
+    private void drawRooms(Level level, Player player) {
         g.setForegroundColor(TextColor.ANSI.WHITE);
 
         for (Room room : level.getRooms()) {
@@ -62,7 +62,7 @@ public class LevelRenderer {
         }
     }
 
-    private void drawRoom(Room room, Character player) {
+    private void drawRoom(Room room, Player player) {
         // стены
         g.setForegroundColor(TextColor.ANSI.YELLOW);
         for (Position p : room.walls) {
@@ -112,7 +112,7 @@ public class LevelRenderer {
         }
     }
 
-    private void drawEnemies(Level level, Character player) {
+    private void drawEnemies(Level level, Player player) {
         Room playerRoom = level.findRoom(player.getPosition());
 
         for (Enemy enemy : level.getEnemies()) {
@@ -134,7 +134,7 @@ public class LevelRenderer {
         }
     }
 
-    private void drawItems(Level level, Character player) {
+    private void drawItems(Level level, Player player) {
         for (Item item : level.getItems()) {
             Position p = item.getPosition();
             if (!fog.wasVisited(p.x, p.y)) continue;
@@ -156,7 +156,7 @@ public class LevelRenderer {
         g.putString(p.x, p.y, ">"); // 🚪
     }
 
-    private void drawPlayer(Character player) {
+    private void drawPlayer(Player player) {
         Position p = player.getPosition();
         g.setForegroundColor(TextColor.ANSI.CYAN);
         g.putString(p.x, p.y, "☺"); // 🙂 ☺

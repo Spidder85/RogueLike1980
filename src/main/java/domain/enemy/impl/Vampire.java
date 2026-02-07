@@ -2,7 +2,10 @@ package domain.enemy.impl;
 
 import domain.common.Direction;
 import domain.common.Position;
+import domain.character.Player;
+
 import domain.enemy.*;
+import domain.game.GameEvent;
 
 import java.util.List;
 import java.util.Random;
@@ -70,6 +73,20 @@ public class Vampire extends Enemy {
             firstHitIgnored = false;
             return false;
         }
+
         return super.takeDamage(damage); // вызов родительского метода
+    }
+
+    @Override
+    public void performSpecialAbility(Player player, List<GameEvent> events) {
+        int drain = RANDOM.nextInt(3) + 1;
+        player.decreaseMaxHealth(1);
+        events.add(new GameEvent(
+                "vampireDrain",
+                player.getX(),
+                player.getY(),
+                drain,
+                EnemyType.VAMPIRE.name()
+        ));
     }
 }

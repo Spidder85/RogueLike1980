@@ -26,9 +26,9 @@ public final class GameSettings {
 
     public static final boolean ENABLE_FOG_OF_WAR = true; // вкл/выкл "Туман войны"
 
-    public static final boolean ICON_MODE = true;    // отображение тектовых символов / иконок
+    //public static final boolean ICON_MODE = false;    // отображение текстовых символов / иконок
 
-    public static final int STATUS_LOG_SIZE = 4;
+    public static final int STATUS_LOG_SIZE = 8;
 
     private GameSettings() {}
 }

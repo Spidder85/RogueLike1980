@@ -1,10 +1,10 @@
 package domain.enemy;
 
+import domain.character.Player;
 import domain.common.Position;
-import domain.character.Character;
-import domain.map.Room;
+import domain.game.GameEvent;
 
-import java.util.*;
+import java.util.List;
 
 public abstract class Enemy {
 
@@ -71,7 +71,7 @@ public abstract class Enemy {
      * Базовая логика — цель жива.
      * Можно переопределять, если ТЗ потребует.
      */
-    public boolean canAttack(Character target) {
+    public boolean canAttack(Player target) {
         return target != null && target.isAlive();
     }
 
@@ -82,7 +82,7 @@ public abstract class Enemy {
         return position.y;
     }
 
-    public void performSpecialAbility(Character player) {}
+    public void performSpecialAbility(Player player, List<GameEvent> events) {}
 
     public abstract void update();
 }

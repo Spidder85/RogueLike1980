@@ -1,6 +1,6 @@
 package domain.game;
 
-import domain.character.Character;
+import domain.character.Player;
 import domain.common.Position;
 import domain.enemy.EnemyContext;
 import domain.enemy.EnemyIntent;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class TurnManager {
     public List<GameEvent> nextTurn(GameSession session) {
-        Character player = session.getPlayer();
+        Player player = session.getPlayer();
         Level level = session.getCurrentLevel();
         List<GameEvent> events = new ArrayList<>();
 
@@ -36,7 +36,10 @@ public class TurnManager {
 
                         int damage = enemy.getStrength();
 
-                        if (isHit) player.takeDamage(damage);
+                        if (isHit) {
+                            player.takeDamage(damage);
+                            enemy.performSpecialAbility(player, events);
+                        }
                         events.add(new GameEvent(
                                 isHit ? "enemyHit" : "enemyMiss",
                                 player.getX(),

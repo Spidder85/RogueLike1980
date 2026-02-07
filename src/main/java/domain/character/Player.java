@@ -5,7 +5,7 @@ import domain.common.Position;
 
 import java.util.*;
 
-public class Character {
+public class Player {
     private int maxHealth;  // максимальное здоровье
     private int health; // текущее здоровье
     private int agility;    // ловкость
@@ -45,7 +45,7 @@ public class Character {
         }
     }
 
-    public Character(int maxHealth, int agility, int strength) {
+    public Player(int maxHealth, int agility, int strength) {
         this.maxHealth = maxHealth;
         this.health = maxHealth;
         this.agility = agility;
@@ -211,4 +211,5 @@ public class Character {
         maxHealth = Math.max(1, maxHealth - amount);
         health = Math.min(health, maxHealth);
     }
+
 }

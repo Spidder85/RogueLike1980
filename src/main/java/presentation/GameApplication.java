@@ -1,11 +1,9 @@
 package presentation;
 
 import com.googlecode.lanterna.input.KeyStroke;
+import domain.character.Player;
 import domain.game.GameEngine;
-import domain.game.GameEvent;
 import domain.game.GameSession;
-import domain.character.Character;
-import domain.map.CorridorGenerator;
 import domain.map.Level;
 import settings.GameSettings;
 
@@ -20,7 +18,7 @@ public class GameApplication {
                 .setInitialTerminalSize(
                         new com.googlecode.lanterna.TerminalSize(
                                 GameSettings.GAME_WIDTH + 40,
-                                GameSettings.GAME_HEIGHT + 10
+                                GameSettings.GAME_HEIGHT + GameSettings.STATUS_LOG_SIZE + 6
                         )
                 )
                 .createScreen();
@@ -28,7 +26,7 @@ public class GameApplication {
         screen.startScreen();
         screen.setCursorPosition(null); // we don't need a cursor
 
-        Character player = new Character(
+        Player player = new Player(
                 GameSettings.MAX_HEALTH,
                 GameSettings.INITIAL_AGILITY,
                 GameSettings.INITIAL_STRENGTH

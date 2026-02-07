@@ -1,7 +1,7 @@
 package domain.game;
 
 import domain.Item;
-import domain.character.Character;
+import domain.character.Player;
 import domain.common.Position;
 import domain.enemy.Enemy;
 import domain.map.Level;
@@ -17,7 +17,7 @@ public class GameEngine {
 
     private final Random random = new Random();
 
-    public GameEngine(Character player) {
+    public GameEngine(Player player) {
         this.session = new GameSession(player);
         this.turnManager = new TurnManager();
         this.levelManager = new LevelManager();
@@ -29,7 +29,7 @@ public class GameEngine {
         session.reset();
         session.setCurrentLevel(firstLevel);
 
-        Character player = session.getPlayer();
+        Player player = session.getPlayer();
         Room startRoom = firstLevel.startRoom;
         player.setPosition(startRoom.getCenter().x, startRoom.getCenter().y);
     }
@@ -48,7 +48,7 @@ public class GameEngine {
     }
 
     public GameEvent movePlayer(int dx, int dy) {
-        Character player = session.getPlayer();
+        Player player = session.getPlayer();
         Level currentLevel = session.getCurrentLevel();
 
         int newX = player.getX() + dx;

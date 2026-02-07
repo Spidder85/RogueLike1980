@@ -1,9 +1,10 @@
 package domain.enemy.impl;
 
+import domain.character.Player;
 import domain.common.Direction;
 import domain.common.Position;
-import domain.character.Character;
 import domain.enemy.*;
+import domain.game.GameEvent;
 
 import java.util.List;
 import java.util.Random;
@@ -66,9 +67,16 @@ public class SnakeMage extends Enemy {
     }
 
     @Override
-    public void performSpecialAbility(Character player) {
+    public void performSpecialAbility(Player player, List<GameEvent> events) {
         if (RANDOM.nextInt(100) < 30) {
             player.putToSleep(1);
+            events.add(new GameEvent(
+                    "snakeMagePutToSleep",
+                    player.getX(),
+                    player.getY(),
+                    0,
+                    EnemyType.SNAKE_MAGE.name()
+            ));
         }
     }
 

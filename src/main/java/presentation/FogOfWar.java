@@ -1,8 +1,8 @@
 package presentation;
 
+import domain.character.Player;
 import domain.common.Position;
 import domain.map.Level;
-import domain.character.Character;
 import settings.GameSettings;
 
 public class FogOfWar {
@@ -53,7 +53,7 @@ public class FogOfWar {
     }
 
     // алгоритм Ray Marching
-    public void computeVisibility(Character player, int radius, Level level) {
+    public void computeVisibility(Player player, int radius, Level level) {
         clearVisible();
 
         double px = player.getX() + 0.5;

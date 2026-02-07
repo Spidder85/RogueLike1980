@@ -3,11 +3,10 @@ package presentation;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
-import domain.character.Character;
 import domain.Item;
 import domain.ItemType;
+import domain.character.Player;
 
-import java.io.IOException;
 import java.util.List;
 
 public class InventoryView {
@@ -17,7 +16,7 @@ public class InventoryView {
         this.screen = screen;
     }
 
-    public Integer chooseItem(Character player, ItemType type) {
+    public Integer chooseItem(Player player, ItemType type) {
         List<Item> items = player.getBackpack().getItems(type);
         if (items.isEmpty()) return null;
 

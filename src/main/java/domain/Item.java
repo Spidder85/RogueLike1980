@@ -1,6 +1,6 @@
 package domain;
 
-import domain.character.Character;
+import domain.character.Player;
 import domain.common.Position;
 
 public class Item {
@@ -48,20 +48,20 @@ public class Item {
     }
 
     // использование предмета
-    public void apply(Character character) {
+    public void apply(Player player) {
         switch (type) {
             case FOOD:
-                character.heal(health);
+                player.heal(health);
                 break;
             case SCROLL:    // ПОСТОЯННЫЕ эффекты
-                character.applyPermanentEffect(maxHealth, agility, strength);
+                player.applyPermanentEffect(maxHealth, agility, strength);
                 break;
             case ELIXIR:    // ВРЕМЕННЫЕ эффекты
-                character.applyTemporaryEffect(duration, maxHealth, agility, strength);
+                player.applyTemporaryEffect(duration, maxHealth, agility, strength);
                 break;
 
             case WEAPON:
-                character.setCurrentWeapon(this);
+                player.setCurrentWeapon(this);
                 break;
 
             default:
