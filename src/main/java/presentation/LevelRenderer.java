@@ -113,6 +113,8 @@ public class LevelRenderer {
     }
 
     private void drawEnemies(Level level, Player player) {
+        Position pp = player.getPosition();
+
         Room playerRoom = level.findRoom(player.getPosition());
 
         for (Enemy enemy : level.getEnemies()) {
@@ -120,15 +122,14 @@ public class LevelRenderer {
 
             if (!fog.wasVisited(p.x, p.y) ) continue;
 
-
             Room enemyRoom = level.findRoom(p);
 
-            // враг в комнате
-            if (enemyRoom != null) {
-                if (enemyRoom != playerRoom) continue; // игрок и враг в одной комнате
-            }
+            boolean visible =
+                    fog.isVisible(p.x, p.y) // в зоне прямой видимости
+                    || (enemyRoom != null && enemyRoom.isValid(pp)); // в одной комнате с игроком
 
-            // иначе враг в коридоре — показываем если виден
+            if (!visible) continue;
+
             g.setForegroundColor(colorByEnemy(enemy));
             g.putString(p.x, p.y, charByEnemy(enemy));
         }
