@@ -38,6 +38,7 @@ public class Item {
     public int getAgility() { return agility; }
     public int getStrength() { return strength; }
     public int getCost() { return cost; }
+    public int getDuration() { return duration; }
 
     public int getX() { return x; }
     public int getY() { return y;}

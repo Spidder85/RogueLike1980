@@ -69,7 +69,7 @@ public class Level {
                 .orElse(null);
     }
 
-    void addEnemy(Enemy enemy) {
+    public void addEnemy(Enemy enemy) {
         enemies.add(enemy);
     }
 

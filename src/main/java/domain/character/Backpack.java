@@ -45,4 +45,15 @@ public class Backpack {
     public int getTreasureAmount() {
         return treasureAmount;
     }
+
+    public Map<ItemType, List<Item>> getItemsMap() {
+        return items;
+    }
+
+    public void clear() {
+        for (List<Item> list : items.values()) {
+            list.clear();
+        }
+        treasureAmount = 0;
+    }
 }

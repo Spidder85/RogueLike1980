@@ -61,17 +61,10 @@ public abstract class Enemy {
        ПОВЕДЕНИЕ (ШАБЛОН)
        ====================== */
 
-    /**
-     * Решение намерения врага на текущий ход.
-     * Конкретная логика — в наследниках (Zombie и т.д.)
-     */
+    //  Решение намерения врага на текущий ход.
     public abstract EnemyIntent decideIntent(EnemyContext context);
 
-    /**
-     * Может ли враг атаковать цель.
-     * Базовая логика — цель жива.
-     * Можно переопределять, если ТЗ потребует.
-     */
+    // Может ли враг атаковать цель.
     public boolean canAttack(Player target) {
         return target != null && target.isAlive();
     }
@@ -86,4 +79,20 @@ public abstract class Enemy {
     public void performSpecialAbility(Player player, List<GameEvent> events) {}
 
     public abstract void update();
+
+    public void restore(
+            int health,
+            int maxHealth,
+            int agility,
+            int strength,
+            int hostility,
+            Position position
+    ) {
+        this.health = health;
+        this.maxHealth = maxHealth;
+        this.agility = agility;
+        this.strength = strength;
+        this.hostility = hostility;
+        this.position = position;
+    }
 }
