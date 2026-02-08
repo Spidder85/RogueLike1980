@@ -1,10 +1,14 @@
 package presentation;
 
 import com.googlecode.lanterna.input.KeyStroke;
+import datalayer.SessionRepository;
+import datalayer.mapper.JsonSessionRepository;
 import domain.character.Player;
 import domain.game.GameEngine;
 import domain.game.GameSession;
 import domain.map.Level;
+import presentation.StartMenu.StartMenu;
+import presentation.StartMenu.StartMenuAction;
 import settings.GameSettings;
 
 import com.googlecode.lanterna.screen.Screen;
@@ -26,20 +30,50 @@ public class GameApplication {
         screen.startScreen();
         screen.setCursorPosition(null); // we don't need a cursor
 
-        Player player = new Player(
-                GameSettings.MAX_HEALTH,
-                GameSettings.INITIAL_AGILITY,
-                GameSettings.INITIAL_STRENGTH
-        );
-        GameEngine engine = new GameEngine(player);
-        engine.startNewGame();
+
+
+        SessionRepository repo = new JsonSessionRepository();
+
+        GameEngine engine = null;
+
+        // стартовое меню
+        StartMenu menu = new StartMenu();
+        while (engine == null) {
+            StartMenuAction action = menu.show(screen);
+
+            switch (action) {
+                case NEW_GAME -> {
+                    Player player = new Player(
+                            GameSettings.MAX_HEALTH,
+                            GameSettings.INITIAL_AGILITY,
+                            GameSettings.INITIAL_STRENGTH
+                    );
+                    engine = new GameEngine(player);
+                    engine.startNewGame();
+                }
+                case CONTINUE -> {
+                    GameSession session = repo.load();
+                    if (session == null) {
+                        continue;
+                    }
+                    engine = new GameEngine(session);
+                }
+                case LEADERBOARD -> {
+                    showLeaderboard();
+                }
+                case EXIT -> {
+                    screen.stopScreen();
+                    return;
+                }
+            }
+        }
 
         GameSession session = engine.getSession();
 
         LevelRenderer renderer = new LevelRenderer(screen);
 
         InventoryView inventoryView = new InventoryView(screen);
-        InputHandler inputHandler = new InputHandler(engine, inventoryView);
+        InputHandler inputHandler = new InputHandler(engine, inventoryView, repo);
 
         boolean running = true;
         while (running && !session.isFinished()) {
@@ -57,5 +91,9 @@ public class GameApplication {
         }
 
         screen.stopScreen();
+    }
+
+    private static void showLeaderboard() {
+
     }
 }

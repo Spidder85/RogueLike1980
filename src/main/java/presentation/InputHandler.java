@@ -2,6 +2,7 @@ package presentation;
 
 import com.googlecode.lanterna.input.KeyStroke;
 //import com.googlecode.lanterna.screen.Screen;
+import datalayer.SessionRepository;
 import domain.ItemType;
 import domain.game.GameEngine;
 import domain.game.GameEvent;
@@ -11,9 +12,14 @@ public class InputHandler {
     private final GameEngine engine;
     private final InventoryView inventoryView;
 
-    public InputHandler(GameEngine engine, InventoryView inventoryView) {
+    private final SessionRepository repository;
+
+    public InputHandler(GameEngine engine,
+                        InventoryView inventoryView,
+                        SessionRepository repository) {
         this.engine = engine;
         this.inventoryView = inventoryView;
+        this.repository = repository;
     }
 
     public boolean handle(KeyStroke key, GameSession session, LevelRenderer renderer) {
@@ -38,8 +44,10 @@ public class InputHandler {
 
         if (e != null) {// || "exit".equals(e.getType())) {
             session.pushEvent(e);
-            if (e.getType().equals("exit"))
+            if (e.getType().equals("exit")) {
                 renderer.fog.reset();
+                repository.save(session);
+            }
         }
         return true;
     }

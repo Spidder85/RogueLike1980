@@ -24,6 +24,13 @@ public class GameEngine {
         this.levelManager = new LevelManager();
     }
 
+    public GameEngine(GameSession session) {
+        this.session = session;
+        this.turnManager = new TurnManager();
+        this.levelManager = new LevelManager();
+        this.levelManager.createLevels();
+    }
+
     public void startNewGame() {
         levelManager.createLevels();
         Level firstLevel = levelManager.getLevel(1);
@@ -38,6 +45,7 @@ public class GameEngine {
     public void goToNextLevel() {
         Level currentLevel = session.getCurrentLevel();
         int nextLevelNumber = currentLevel.getIndex() + 1;
+
         if (nextLevelNumber > GameSettings.MAX_LEVELS) {
             session.finishGame();
             return;
