@@ -135,13 +135,24 @@ public class LevelRenderer {
     }
 
     private void drawItems(Level level, Player player) {
+        Position pp = player.getPosition();
+
         for (Item item : level.getItems()) {
             Position p = item.getPosition();
+
+            // скрыто туманом
             if (!fog.wasVisited(p.x, p.y)) continue;
 
+            boolean visible;
             Room room = level.findRoom(p);
-            if (room == null) continue;
-            if (!room.isValid(player.getPosition())) continue; // игрок не в комнате
+            if(room != null) {
+                // предмет в комнате → показываем только если игрок в этой же комнате
+                visible = room.isValid(pp);
+            } else {
+                visible = fog.isVisible(p.x, p.y);
+            }
+
+            if (!visible) continue;
 
             g.setForegroundColor(colorByItem(item));
             g.putString(p.x, p.y, charByItem(item));
@@ -180,7 +191,7 @@ public class LevelRenderer {
             case ELIXIR -> TextColor.ANSI.WHITE;
             case SCROLL -> TextColor.ANSI.WHITE;
             case WEAPON -> TextColor.ANSI.WHITE;
-            case TREASURE -> TextColor.ANSI.WHITE;
+            case TREASURE -> new TextColor.RGB(255,215,0);
             default -> TextColor.ANSI.WHITE;
         };
     }

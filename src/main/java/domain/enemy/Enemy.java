@@ -11,7 +11,7 @@ public abstract class Enemy {
     protected final EnemyType type; // тип врага
 
     private int health; // здоровье врага
-    //private int maxHealth;  // максимальное здоровье врага
+    private int maxHealth;  // максимальное здоровье врага
     private int agility;    // ловкость врага
     private int strength;   // сила врага
     private int hostility;  // враждебность врага
@@ -28,7 +28,7 @@ public abstract class Enemy {
     ) {
         this.type = type;
         this.health = health;
-        //this.maxHealth = health;
+        this.maxHealth = health;
         this.agility = agility;
         this.strength = strength;
         this.hostility = hostility;
@@ -41,6 +41,7 @@ public abstract class Enemy {
 
     public EnemyType getType() { return type; }
     public int getHealth() { return health; }
+    public int getMaxHealth() { return maxHealth; }
     public int getAgility() { return agility; }
     public int getStrength() { return strength; }
     public int getHostility() { return hostility; }

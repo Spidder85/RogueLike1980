@@ -1,7 +1,7 @@
 package presentation;
 
 import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.screen.Screen;
+//import com.googlecode.lanterna.screen.Screen;
 import domain.ItemType;
 import domain.game.GameEngine;
 import domain.game.GameEvent;
@@ -19,7 +19,7 @@ public class InputHandler {
     public boolean handle(KeyStroke key, GameSession session, LevelRenderer renderer) {
         if (key.getCharacter() == null) return true;
 
-        GameEvent e = null;
+        GameEvent e;// = null;
 
         switch (key.getCharacter()) {
             case 'w' -> e = engine.movePlayer(0, -1);
@@ -47,8 +47,7 @@ public class InputHandler {
     private GameEvent useItem(GameSession session, ItemType type) {
         Integer index = inventoryView.chooseItem(session.getPlayer(), type);
         if (index != null) {
-            //engine.useItem(type, index);
-            return new GameEvent("usedItem", 0, 0, index, type.name());
+            return engine.useItem(type, index);
         }
         return null;
     }

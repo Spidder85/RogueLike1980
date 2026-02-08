@@ -80,7 +80,7 @@ public class Vampire extends Enemy {
     @Override
     public void performSpecialAbility(Player player, List<GameEvent> events) {
         int drain = RANDOM.nextInt(3) + 1;
-        player.decreaseMaxHealth(1);
+        player.decreaseMaxHealth(drain);
         events.add(new GameEvent(
                 "vampireDrain",
                 player.getX(),

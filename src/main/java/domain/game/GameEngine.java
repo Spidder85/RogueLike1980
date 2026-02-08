@@ -1,6 +1,7 @@
 package domain.game;
 
 import domain.Item;
+import domain.ItemType;
 import domain.character.Player;
 import domain.common.Position;
 import domain.enemy.Enemy;
@@ -68,6 +69,7 @@ public class GameEngine {
             if (isHit) isHit = enemy.takeDamage(damage);
 
             if (!enemy.isAlive()) {
+                generateTreasure(enemy);
                 currentLevel.removeEnemy(enemy);
                 return new GameEvent("enemyKilled", newX, newY, 0, enemy.getType().name());
             } else {
@@ -107,4 +109,82 @@ public class GameEngine {
     public GameSession getSession() { return session; }
     public LevelManager getLevelManager() { return levelManager; }
     public TurnManager getTurnManager() { return turnManager; }
+
+    public GameEvent useItem(ItemType type, int index) {
+        Player player = session.getPlayer();
+        Level level = session.getCurrentLevel();
+
+        // снять оружие
+        if (type == ItemType.WEAPON && index == -1) {
+            Item currentWeapon = player.getCurrentWeapon();
+            if (currentWeapon != null) {
+                player.setCurrentWeapon(null);
+                player.getBackpack().addItem(currentWeapon);
+            }
+            return new GameEvent(
+                    "weaponRemoved",
+                    player.getX(),
+                    player.getY(),
+                    0,
+                    ""
+            );
+        }
+
+        List<Item> items = player.getBackpack().getItems(type);
+        if (index < 0 || index >= items.size())
+            return null;
+
+        Item item = items.get(index);
+
+        if (type == ItemType.WEAPON) {
+            Item oldWeapon = player.getCurrentWeapon();
+            if (oldWeapon != null) {
+                // выбросить на пол
+                Position dropPos = level.findFreeAdjacentCell(player.getPosition());
+                if (dropPos != null) {
+                    oldWeapon.setPosition(dropPos.x, dropPos.y);
+                    level.addItem(oldWeapon);
+                }
+            }
+            player.setCurrentWeapon(item);
+        }
+        // применяем предмет
+        item.apply(player);
+
+        player.getBackpack().removeItem(item);
+
+        return new GameEvent(
+                type == ItemType.WEAPON ? "weaponEquipped" : "usedItem",
+                player.getX(),
+                player.getY(),
+                0,
+                item.getSubtype()
+        );
+    }
+
+    private void generateTreasure(Enemy enemy) {
+        Level level = session.getCurrentLevel();
+
+        int base = enemy.getHostility() +
+                   enemy.getStrength() +
+                   enemy.getAgility() +
+                   enemy.getMaxHealth() / 2;
+        int min = Math.max(1, base / 4);
+        int max = Math.max(min, base / 2);
+
+        int amount = random.nextInt(max - min + 1) + min;
+
+        Item gold = new Item(
+            ItemType.TREASURE,
+            "gold",
+            0,
+            0,
+            0,
+            0,
+            amount,
+            0
+        );
+        gold.setPosition(enemy.getX(), enemy.getY());
+        level.addItem(gold);
+    }
 }

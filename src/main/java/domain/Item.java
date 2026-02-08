@@ -61,7 +61,7 @@ public class Item {
                 break;
 
             case WEAPON:
-                player.setCurrentWeapon(this);
+                //player.setCurrentWeapon(this);
                 break;
 
             default:

@@ -19,6 +19,12 @@ public class EventFormatter {
             case "sleep" -> "Игрок уснул";
             case "exit" -> "Найден переход на следующий уровень";
 
+            case "weaponRemoved" -> "Оружие " + e.getItemType() + " убрано";
+            case "weaponEquipped" -> "Оружие " + e.getItemType() + " экипировано'";
+            case "usedItem" -> "Использован предмет " + e.getItemType();
+            case "vampireDrain" -> "Вампир поглощает " + e.getValue() + " здоровья";
+            case "snakeMagePutToSleep" -> "Змей маг усыпил игрока";
+
             default -> "Произошло что-то странное...";
         };
     }

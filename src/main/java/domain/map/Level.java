@@ -69,49 +69,11 @@ public class Level {
                 .orElse(null);
     }
 
-
-
-
-
-//    public static final int ROOM_COUNT = 9;
-//
-//    private final int levelNumber;
-//
-//    private final List<Room> rooms = new ArrayList<>();
-//    private final List<Corridor> corridors = new ArrayList<>();
-//    private final List<Enemy> enemies = new ArrayList<>();
-//    private final List<Item> items = new ArrayList<>();
-//
-////    private final Room startRoom;
-////    private final Room exitRoom;
-//
-//    public Level(int levelNumber) {
-//        this.levelNumber = levelNumber;
-//    }
-//
-//    // генерация уровня
-//    public void  generate() {
-//        LevelGenerator generator = new LevelGenerator();
-//        generator.generate(this);
-//
-//        validateRoomCount();
-//        validateConnectivity();
-//    }
-//
-//    // регистрация уровня
-//    void addRoom(Room room) {
-//        rooms.add(room);
-//    }
-//
-//    void addCorridor(Corridor corridor) {
-//        corridors.add(corridor);
-//    }
-//
     void addEnemy(Enemy enemy) {
         enemies.add(enemy);
     }
 
-    void addItem(Item item) {
+    public void addItem(Item item) {
         items.add(item);
     }
 
@@ -130,18 +92,11 @@ public class Level {
         }
         return false;
     }
-//
-//    // доступ
-//
-//    public int getLevelNumber() {
-//        return levelNumber;
-//    }
 
+    // доступ
     public List<Corridor> getCorridors() {
         return corridors;
     }
-
-
 
     public  List<Enemy> getEnemies() {
         return enemies;
@@ -152,45 +107,7 @@ public class Level {
     }
 
     public List<Item> getItems() { return items; }
-//
-//    public Room getStartRoom() {
-//        return rooms.stream()
-//                .filter(Room::isStart)
-//                .findFirst()
-//                .orElseThrow(() ->
-//                        new IllegalStateException("Start room is missing"));
-//    }
-//
-//    public Room getExitRoom() {
-//        return rooms.stream()
-//                .filter(Room::isExit)
-//                .findFirst()
-//                .orElseThrow(() ->
-//                        new IllegalStateException("Exit room is missing"));
-//    }
-//
-//    public Position getStartPosition() {
-//        Room start = getStartRoom();
-//        return new Position(
-//                start.getCenterX(),
-//                start.getCenterY()
-//        );
-//    }
-//
-//    public Position getExitPosition() {
-//        Room exit = getExitRoom();
-//        return new Position(
-//                exit.getCenterX(),
-//                exit.getCenterY()
-//        );
-//    }
-//
-//    // Проверка является ли позиция выходом
-//    public boolean isExitPosition(int x, int y) {
-//        Position exit = getExitPosition();
-//        return exit.x == x && exit.y == y;
-//    }
-//
+
     public Enemy getEnemyAt(int x, int y) {
         return enemies.stream()
                 .filter(e -> e.isAlive() && e.getX() == x && e.getY() == y)
@@ -233,5 +150,19 @@ public class Level {
         if (isExit(p)) return exitPosition;
 
         return null;
+    }
+
+    public Position findFreeAdjacentCell(Position from) {
+        int[][] dirs = {
+                {1, 0}, {-1, 0}, {0, 1}, {0, -1}
+        };
+
+        for (int[] d : dirs) {
+            Position p = new Position(from.x + d[0], from.y + d[1]);
+            if (isWalkable(p) && getObjectAt(p) == null) {
+                return p;
+            }
+        }
+        return null; // если все занято — оружие пропадает (или можно логировать)
     }
 }
