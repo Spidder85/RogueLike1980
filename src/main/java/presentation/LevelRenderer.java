@@ -122,13 +122,7 @@ public class LevelRenderer {
 
             if (!fog.wasVisited(p.x, p.y) ) continue;
 
-            Room enemyRoom = level.findRoom(p);
-
-            boolean visible =
-                    fog.isVisible(p.x, p.y) // в зоне прямой видимости
-                    || (enemyRoom != null && enemyRoom.isValid(pp)); // в одной комнате с игроком
-
-            if (!visible) continue;
+            if (!isVisible(p, player, level)) continue;
 
             g.setForegroundColor(colorByEnemy(enemy));
             g.putString(p.x, p.y, charByEnemy(enemy));
@@ -144,20 +138,23 @@ public class LevelRenderer {
             // скрыто туманом
             if (!fog.wasVisited(p.x, p.y)) continue;
 
-            boolean visible;
-            Room room = level.findRoom(p);
-            if(room != null) {
-                // предмет в комнате → показываем только если игрок в этой же комнате
-                visible = room.isValid(pp);
-            } else {
-                visible = fog.isVisible(p.x, p.y);
-            }
-
-            if (!visible) continue;
+            if (!isVisible(p, player, level)) continue;
 
             g.setForegroundColor(colorByItem(item));
             g.putString(p.x, p.y, charByItem(item));
         }
+    }
+
+    private boolean isVisible(Position p, Player player, Level level) {
+        Position pp = player.getPosition();
+
+        // 1. в зоне прямой видимости игрока
+        if (fog.isVisible(p.x, p.y))
+            return true;
+
+        // 2. в одной комнате с игроком
+        Room r = level.findRoom(p);
+        return r != null && r.isValid(player.getPosition());
     }
 
     private void drawExit(Level level) {
