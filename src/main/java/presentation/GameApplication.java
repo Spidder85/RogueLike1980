@@ -6,6 +6,7 @@ import datalayer.mapper.JsonSessionRepository;
 import domain.character.Player;
 import domain.game.GameEngine;
 import domain.game.GameSession;
+import domain.game.LevelManager;
 import domain.map.Level;
 import presentation.StartMenu.StartMenu;
 import presentation.StartMenu.StartMenuAction;
@@ -30,11 +31,10 @@ public class GameApplication {
         screen.startScreen();
         screen.setCursorPosition(null); // we don't need a cursor
 
-
-
         SessionRepository repo = new JsonSessionRepository();
 
         GameEngine engine = null;
+        LevelManager lm = new LevelManager();
 
         // стартовое меню
         StartMenu menu = new StartMenu();
@@ -43,20 +43,26 @@ public class GameApplication {
 
             switch (action) {
                 case NEW_GAME -> {
+                    lm.createLevels();
+
+                    Level firstLevel = lm.getLevel(1);
                     Player player = new Player(
                             GameSettings.MAX_HEALTH,
                             GameSettings.INITIAL_AGILITY,
                             GameSettings.INITIAL_STRENGTH
                     );
-                    engine = new GameEngine(player);
-                    engine.startNewGame();
+                    GameSession session = GameSession.newGame(player, firstLevel);
+
+                    engine = new GameEngine(session, lm);
                 }
                 case CONTINUE -> {
                     GameSession session = repo.load();
                     if (session == null) {
                         continue;
                     }
-                    engine = new GameEngine(session);
+                    lm.createLevels();
+
+                    engine = new GameEngine(session, lm);
                 }
                 case LEADERBOARD -> {
                     showLeaderboard();

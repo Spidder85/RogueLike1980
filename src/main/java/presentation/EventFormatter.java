@@ -17,7 +17,8 @@ public class EventFormatter {
             case "enemyKilled" -> "Враг повержен";
             case "playerKilled" -> "Игрок повержен";
             case "sleep" -> "Игрок уснул";
-            case "exit" -> "Найден переход на следующий уровень";
+            case "levelChanged" -> "Найден переход на уровень" + e.getValue();
+            case "gameFinished" -> "Игра завершена";
 
             case "weaponRemoved" -> "Оружие " + e.getItemType() + " убрано";
             case "weaponEquipped" -> "Оружие " + e.getItemType() + " экипировано'";

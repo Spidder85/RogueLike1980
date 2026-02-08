@@ -18,42 +18,48 @@ public class GameEngine {
 
     private final Random random = new Random();
 
-    public GameEngine(Player player) {
-        this.session = new GameSession(player);
-        this.turnManager = new TurnManager();
-        this.levelManager = new LevelManager();
-    }
+//    public GameEngine(Player player) {
+//        this.session = new GameSession(player);
+//        this.turnManager = new TurnManager();
+//        this.levelManager = new LevelManager();
+//    }
 
-    public GameEngine(GameSession session) {
+    public GameEngine(GameSession session, LevelManager levelManager) {
         this.session = session;
         this.turnManager = new TurnManager();
-        this.levelManager = new LevelManager();
-        this.levelManager.createLevels();
+        this.levelManager = levelManager == null ? new LevelManager(): levelManager;
+        //this.levelManager.createLevels();
     }
 
-    public void startNewGame() {
-        levelManager.createLevels();
-        Level firstLevel = levelManager.getLevel(1);
-        session.reset();
-        session.setCurrentLevel(firstLevel);
+//    public void startNewGame() {
+//        levelManager.createLevels();
+//        Level firstLevel = levelManager.getLevel(1);
+//        session.reset();
+//        session.setCurrentLevel(firstLevel);
+//
+//        Player player = session.getPlayer();
+//        Room startRoom = firstLevel.startRoom;
+//        player.setPosition(startRoom.getCenter().x, startRoom.getCenter().y);
+//    }
 
-        Player player = session.getPlayer();
-        Room startRoom = firstLevel.startRoom;
-        player.setPosition(startRoom.getCenter().x, startRoom.getCenter().y);
-    }
-
-    public void goToNextLevel() {
+    public GameEvent goToNextLevel() {
         Level currentLevel = session.getCurrentLevel();
         int nextLevelNumber = currentLevel.getIndex() + 1;
 
         if (nextLevelNumber > GameSettings.MAX_LEVELS) {
             session.finishGame();
-            return;
+            return new GameEvent("gameFinished", 0, 0, 0, "");
         }
 
         Level nextLevel = levelManager.getLevel(nextLevelNumber);
         session.setCurrentLevel(nextLevel);
-        session.getPlayer().setPosition(nextLevel.startRoom.getCenter().x, nextLevel.startRoom.getCenter().y);
+        Player p = session.getPlayer();
+        Room start = nextLevel.startRoom;
+        p.setPosition(
+            start.getCenter().x,
+            start.getCenter().y
+        );
+        return new GameEvent("levelChanged", 0, 0, nextLevelNumber, "");
     }
 
     public GameEvent movePlayer(int dx, int dy) {
@@ -101,8 +107,8 @@ public class GameEngine {
         }
 
         if (currentLevel.isExit(newPos)) {  // если "наступили" на выход
-            goToNextLevel();
-            return new GameEvent("exit", newX, newY, 0, "");
+            return goToNextLevel();
+            //return new GameEvent("exit", newX, newY, 0, "");
         }
         return null; //new GameEvent("moved", newX, newY, 0, "");
     }

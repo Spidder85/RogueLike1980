@@ -2,6 +2,7 @@ package domain.game;
 
 import domain.character.Player;
 import domain.map.Level;
+import domain.map.Room;
 import presentation.StatusLog;
 import settings.GameSettings;
 
@@ -33,6 +34,21 @@ public class GameSession {
         return stats;
     }
 
+    public static GameSession newGame(Player player, Level firstLevel) {
+        GameSession session = new GameSession(player);
+
+        session.currentLevel = firstLevel;
+        session.finished = false;
+
+        Room startRoom = firstLevel.startRoom;
+        player.setPosition(
+                startRoom.getRandomPoint().x,
+                startRoom.getRandomPoint().y
+        );
+
+        return session;
+    }
+
     public void finishGame() { finished = true; }
     public boolean isFinished() { return finished; }
 
@@ -40,10 +56,10 @@ public class GameSession {
         return !player.isAlive();
     }
 
-    public void reset() {
-        finished = false;
-        currentLevel = null;
-    }
+//    public void reset() {
+//        finished = false;
+//        currentLevel = null;
+//    }
 
     public void pushEvent(GameEvent e) {
         if (e != null)
