@@ -11,6 +11,7 @@ public class GameSessionMapper {
         dto.player = PlayerMapper.toDTO(session.getPlayer());
         dto.stats = GameStatsMapper.toDTO(session.getStats());
         dto.level = LevelMapper.toDTO(session.getCurrentLevel());
+        dto.worldSeed = session.getWorldSeed();
         return dto;
     }
 
@@ -18,10 +19,11 @@ public class GameSessionMapper {
         Player player = PlayerMapper.fromDTO(dto.player);
 
         GameSession session = new GameSession(player);
+        session.setWorldSeed(dto.worldSeed);
 
         GameStatsMapper.fromDTO(dto.stats, session.getStats());
 
-        Level level = LevelMapper.fromDTO(dto.level);
+        Level level = LevelMapper.fromDTO(dto.level, dto.worldSeed);
         session.setCurrentLevel(level);
 
         return session;

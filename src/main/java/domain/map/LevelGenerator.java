@@ -14,9 +14,10 @@ import domain.enemy.Enemy;
 public class LevelGenerator {
     private LevelGenerator() {}
 
-    public static Level generate(int levelIndex) {
+    public static Level generate(int levelIndex, long worldSeed) {
+        Random random = new Random(worldSeed + levelIndex);
         // 1. комнаты
-        List<Room> rooms = RoomGenerator.createRooms(levelIndex);
+        List<Room> rooms = RoomGenerator.createRooms(levelIndex, random);
 
         // 2. коридоры
         List<Corridor> corridors = CorridorGenerator.generate(rooms);
@@ -34,6 +35,7 @@ public class LevelGenerator {
 
     private static void populate(Level level) {
         Random random = new Random();
+    //private static void populate(Level level, Random random) {
         int levelNumber = level.getIndex();
 
         for (Room room : level.getRooms()) {

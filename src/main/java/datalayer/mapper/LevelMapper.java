@@ -22,8 +22,8 @@ public class LevelMapper {
         return dto;
     }
 
-    public static Level fromDTO(LevelDTO dto) {
-        Level level = LevelGenerator.generate(dto.levelIndex);
+    public static Level fromDTO(LevelDTO dto, long worldSeed) {
+        Level level = LevelGenerator.generate(dto.levelIndex, worldSeed);
 
         level.getEnemies().clear();
         level.getItems().clear();

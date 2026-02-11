@@ -5,11 +5,9 @@ import settings.GameSettings;
 import java.util.*;
 
 public class RoomGenerator {
-    private static final Random random = new Random();
-
     private RoomGenerator() {}
 
-    public static List<Room> createRooms(int level) {
+    public static List<Room> createRooms(int level, Random random) {
         List<Room> rooms = new ArrayList<>();
         int attempts = 0;
         int maxAttempts = GameSettings.COUNT_ROOMS * 500;
@@ -38,7 +36,7 @@ public class RoomGenerator {
         }
 
         if (!rooms.isEmpty()) {
-            setStartAndEnd(rooms);
+            setStartAndEnd(rooms, random);
         }
         return rooms;
     }
@@ -46,8 +44,8 @@ public class RoomGenerator {
     // =========================
     // старт и выход
     // =========================
-    private static void setStartAndEnd(List<Room> rooms) {
-        Collections.shuffle(rooms);
+    private static void setStartAndEnd(List<Room> rooms, Random random) {
+        Collections.shuffle(rooms, random);
 
         rooms.get(0).isStart = true;
 

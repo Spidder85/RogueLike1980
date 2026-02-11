@@ -10,11 +10,11 @@ import java.util.Map;
 public class LevelManager {
     private final Map<Integer, Level> levels = new HashMap<>();
 
-    public void createLevels() {
+    public void createLevels(long worldSeed) {
         levels.clear();
         for(int i = 1; i <= GameSettings.MAX_LEVELS; i++) {
-            Level level = LevelGenerator.generate(i);
-            levels.put(i,level);
+            Level level = LevelGenerator.generate(i, worldSeed);
+            levels.put(i, level);
         }
     }
 

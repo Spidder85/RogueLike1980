@@ -71,16 +71,17 @@ public class StartMenu {
         // LOGO
         for (int i = 0; i < LOGO.length; i++) {
             int x = (width - LOGO[i].length()) / 2;
-            g.putString(x, i + 2, LOGO[i]);
+            g.putString(x, i + 5, LOGO[i]);
         }
 
         // MENU
-        int startY = LOGO.length + 5;
+        int startY = LOGO.length + 10;
         for (int i = 0; i < ITEMS.size(); i++) {
             String prefix = (i == selected) ? "> " : "  ";
             String text = prefix + (i + 1) + ". " + ITEMS.get(i);
 
-            int x = (width - text.length()) / 2;
+            //int x = (width - text.length()) / 2;
+            int x = width / 2 - 10;
             g.putString(x, startY + i, text);
         }
         screen.refresh();

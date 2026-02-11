@@ -18,29 +18,11 @@ public class GameEngine {
 
     private final Random random = new Random();
 
-//    public GameEngine(Player player) {
-//        this.session = new GameSession(player);
-//        this.turnManager = new TurnManager();
-//        this.levelManager = new LevelManager();
-//    }
-
     public GameEngine(GameSession session, LevelManager levelManager) {
         this.session = session;
         this.turnManager = new TurnManager();
         this.levelManager = levelManager == null ? new LevelManager(): levelManager;
-        //this.levelManager.createLevels();
     }
-
-//    public void startNewGame() {
-//        levelManager.createLevels();
-//        Level firstLevel = levelManager.getLevel(1);
-//        session.reset();
-//        session.setCurrentLevel(firstLevel);
-//
-//        Player player = session.getPlayer();
-//        Room startRoom = firstLevel.startRoom;
-//        player.setPosition(startRoom.getCenter().x, startRoom.getCenter().y);
-//    }
 
     public GameEvent goToNextLevel() {
         Level currentLevel = session.getCurrentLevel();
@@ -108,7 +90,6 @@ public class GameEngine {
 
         if (currentLevel.isExit(newPos)) {  // если "наступили" на выход
             return goToNextLevel();
-            //return new GameEvent("exit", newX, newY, 0, "");
         }
         return null; //new GameEvent("moved", newX, newY, 0, "");
     }

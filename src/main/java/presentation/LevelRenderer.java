@@ -122,7 +122,7 @@ public class LevelRenderer {
 
             if (!fog.wasVisited(p.x, p.y) ) continue;
 
-            if (!isVisible(p, player, level)) continue;
+            if (!isVisible(p, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
 
             g.setForegroundColor(colorByEnemy(enemy));
             g.putString(p.x, p.y, charByEnemy(enemy));
@@ -138,7 +138,7 @@ public class LevelRenderer {
             // скрыто туманом
             if (!fog.wasVisited(p.x, p.y)) continue;
 
-            if (!isVisible(p, player, level)) continue;
+            if (!isVisible(p, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
 
             g.setForegroundColor(colorByItem(item));
             g.putString(p.x, p.y, charByItem(item));

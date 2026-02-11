@@ -6,12 +6,16 @@ import domain.map.Room;
 import presentation.StatusLog;
 import settings.GameSettings;
 
+import java.util.Random;
+
 public class GameSession {
     private final Player player;
     private final GameStats stats = new GameStats();
     private Level currentLevel;
     private boolean gameOver;
     private boolean finished;
+
+    private long worldSeed; // Seed для генератора случайных чисел
 
     private final StatusLog statusLog = new StatusLog(GameSettings.STATUS_LOG_SIZE);
 
@@ -34,9 +38,10 @@ public class GameSession {
         return stats;
     }
 
-    public static GameSession newGame(Player player, Level firstLevel) {
+    public static GameSession newGame(Player player, Level firstLevel, long worldSeed) {
         GameSession session = new GameSession(player);
 
+        session.worldSeed = worldSeed;
         session.currentLevel = firstLevel;
         session.finished = false;
 
@@ -68,5 +73,13 @@ public class GameSession {
 
     public StatusLog getStatusLog() {
         return statusLog;
+    }
+
+    public long getWorldSeed() {
+        return worldSeed;
+    }
+
+    public void setWorldSeed(long worldSeed) {
+        this.worldSeed = worldSeed;
     }
 }

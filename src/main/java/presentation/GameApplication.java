@@ -43,15 +43,18 @@ public class GameApplication {
 
             switch (action) {
                 case NEW_GAME -> {
-                    lm.createLevels();
+                    long seed = System.currentTimeMillis();
 
-                    Level firstLevel = lm.getLevel(1);
                     Player player = new Player(
                             GameSettings.MAX_HEALTH,
                             GameSettings.INITIAL_AGILITY,
                             GameSettings.INITIAL_STRENGTH
                     );
-                    GameSession session = GameSession.newGame(player, firstLevel);
+
+                    lm.createLevels(seed);
+                    Level firstLevel = lm.getLevel(1);
+
+                    GameSession session = GameSession.newGame(player, firstLevel, seed);
 
                     engine = new GameEngine(session, lm);
                 }
@@ -60,7 +63,7 @@ public class GameApplication {
                     if (session == null) {
                         continue;
                     }
-                    lm.createLevels();
+                    lm.createLevels(session.getWorldSeed());
 
                     engine = new GameEngine(session, lm);
                 }
