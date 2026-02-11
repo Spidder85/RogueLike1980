@@ -24,18 +24,19 @@ public class LevelGenerator {
 
         // 3. уровень
         Level level = new Level(levelIndex);
-        level.setRooms(rooms);
+        level.setRooms(rooms);  // задать начало комнаты
         level.setCorridors(corridors);
 
-        // 4. контент (пока пусто — строго как в JS до moveRoomContentToLevel)
+        // 4. контент (враги, предметы)
         populate(level);
 
         return level;
     }
 
     private static void populate(Level level) {
+        // генерация всегда случайна и не зависит от worldSeed
         Random random = new Random();
-    //private static void populate(Level level, Random random) {
+
         int levelNumber = level.getIndex();
 
         for (Room room : level.getRooms()) {

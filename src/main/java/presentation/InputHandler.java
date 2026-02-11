@@ -44,7 +44,7 @@ public class InputHandler {
 
         if (e != null) {// || "exit".equals(e.getType())) {
             session.pushEvent(e);
-            if (e.getType().equals("exit")) {
+            if (e.getType().equals("levelChanged")) {
                 renderer.fog.reset();
                 repository.save(session);
             }

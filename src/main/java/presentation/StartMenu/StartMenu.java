@@ -80,7 +80,6 @@ public class StartMenu {
             String prefix = (i == selected) ? "> " : "  ";
             String text = prefix + (i + 1) + ". " + ITEMS.get(i);
 
-            //int x = (width - text.length()) / 2;
             int x = width / 2 - 10;
             g.putString(x, startY + i, text);
         }
