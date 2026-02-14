@@ -26,6 +26,11 @@ public class EventFormatter {
             case "vampireDrain" -> "Вампир поглощает " + e.getValue() + " здоровья";
             case "snakeMagePutToSleep" -> "Змей маг усыпил игрока";
 
+            case "doorOpened" -> "Дверь " + e.getItemType() + " открыта";
+            case "doorLocked" -> "Дверь " + e.getItemType() + " закрыта";
+            case "key" -> "Ключ " + e.getItemType() + " найден";
+
+
             default -> "Произошло что-то странное...";
         };
     }

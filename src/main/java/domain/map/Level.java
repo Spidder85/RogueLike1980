@@ -1,8 +1,9 @@
 package domain.map;
 
-import domain.Item;
+import domain.item.Item;
 import domain.common.Position;
 import domain.enemy.Enemy;
+import domain.item.ItemType;
 
 import java.util.*;
 
@@ -53,6 +54,11 @@ public class Level {
     }
 
     public boolean isWalkable(Position p) {
+        DoorMeta door = getDoorAt(p);
+        if (door != null) {
+            return false;
+        }
+
         for (Room r : rooms) {
             if (r.isValid(p)) return true;
         }
@@ -147,6 +153,9 @@ public class Level {
         Item item = getItemAt(p.x, p.y);
         if (item != null) return item;
 
+        DoorMeta door = getDoorAt(p);
+        if (door != null) return door;
+
         if (isExit(p)) return exitPosition;
 
         return null;
@@ -163,6 +172,34 @@ public class Level {
                 return p;
             }
         }
-        return null; // если все занято — оружие пропадает (или можно логировать)
+        return null; // если все занято — оружие пропадает
+    }
+
+    private final List<DoorMeta> doors = new ArrayList<>();
+
+    public List<DoorMeta> getDoors() {
+        return doors;
+    }
+
+    public void addDoor(DoorMeta door) {
+        doors.add(door);
+    }
+
+    public void removeDoor(DoorMeta door) {
+        doors.removeIf(d -> d == door);
+    }
+    public DoorMeta getDoorAt(Position p) {
+        for (DoorMeta d : doors) {
+            if (d.getPosition().x == p.x
+                    && d.getPosition().y == p.y) {
+                return d;
+            }
+        }
+        return null;
+    }
+
+    public void clearDoorsAndKeys() {
+        doors.clear();
+        items.removeIf(i -> i.getType() == ItemType.KEY);
     }
 }

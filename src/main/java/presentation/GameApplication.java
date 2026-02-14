@@ -38,68 +38,72 @@ public class GameApplication {
 
         // стартовое меню
         StartMenu menu = new StartMenu();
-        while (engine == null) {
-            StartMenuAction action = menu.show(screen);
+        while (true) {
+            while (engine == null) {
+                StartMenuAction action = menu.show(screen);
 
-            switch (action) {
-                case NEW_GAME -> {
-                    long seed = System.currentTimeMillis();
+                switch (action) {
+                    case NEW_GAME -> {
+                        long seed = System.currentTimeMillis();
 
-                    Player player = new Player(
-                            GameSettings.MAX_HEALTH,
-                            GameSettings.INITIAL_AGILITY,
-                            GameSettings.INITIAL_STRENGTH
-                    );
+                        Player player = new Player(
+                                GameSettings.MAX_HEALTH,
+                                GameSettings.INITIAL_AGILITY,
+                                GameSettings.INITIAL_STRENGTH
+                        );
 
-                    lm.createLevels(seed);
-                    Level firstLevel = lm.getLevel(1);
+                        lm.createLevels(seed);
+                        Level firstLevel = lm.getLevel(1);
 
-                    GameSession session = GameSession.newGame(player, firstLevel, seed);
+                        GameSession session = GameSession.newGame(player, firstLevel, seed);
 
-                    engine = new GameEngine(session, lm);
-                }
-                case CONTINUE -> {
-                    GameSession session = repo.load();
-                    if (session == null) {
-                        continue;
+                        engine = new GameEngine(session, lm);
                     }
-                    lm.createLevels(session.getWorldSeed());
+                    case CONTINUE -> {
+                        GameSession session = repo.load();
+                        if (session == null) {
+                            continue;
+                        }
+                        lm.createLevels(session.getWorldSeed());
 
-                    engine = new GameEngine(session, lm);
-                }
-                case LEADERBOARD -> {
-                    showLeaderboard();
-                }
-                case EXIT -> {
-                    screen.stopScreen();
-                    return;
+                        engine = new GameEngine(session, lm);
+                    }
+                    case LEADERBOARD -> {
+                        showLeaderboard();
+                    }
+                    case EXIT -> {
+                        screen.stopScreen();
+                        return;
+                    }
                 }
             }
+
+            GameSession session = engine.getSession();
+
+            LevelRenderer renderer = new LevelRenderer(screen);
+
+            InventoryView inventoryView = new InventoryView(screen);
+            InputHandler inputHandler = new InputHandler(engine, inventoryView, repo);
+
+            boolean running = true;
+            while (running && !session.isFinished()) {
+                Level level = session.getCurrentLevel();
+
+                renderer.render(level, session);
+                screen.refresh();
+
+                KeyStroke key = screen.readInput();
+                if (key == null) continue;
+
+                InputResult result = inputHandler.handle(key, session, renderer);
+                if (result == InputResult.EXIT)
+                    running = false;
+                else if (result == InputResult.ACTION)
+                    engine.nextTurn();
+            }
+            engine = null;
         }
-
-        GameSession session = engine.getSession();
-
-        LevelRenderer renderer = new LevelRenderer(screen);
-
-        InventoryView inventoryView = new InventoryView(screen);
-        InputHandler inputHandler = new InputHandler(engine, inventoryView, repo);
-
-        boolean running = true;
-        while (running && !session.isFinished()) {
-            Level level = session.getCurrentLevel();
-
-            renderer.render(level, session);
-            screen.refresh();
-
-            KeyStroke key = screen.readInput();
-            if (key == null) continue;
-
-            running = inputHandler.handle(key, session, renderer);
-
-            engine.nextTurn();
-        }
-
-        screen.stopScreen();
+        //screen.stopScreen();
     }
 
     private static void showLeaderboard() {

@@ -6,10 +6,12 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StartMenu {
-    private static final String[] LOGO = {
+    private static final String[] LOGO2 = {
             "██████╗  ██████╗  ██████╗ ██╗   ██╗███████╗",
             "██╔══██╗██╔═══██╗██╔════╝ ██║   ██║██╔════╝",
             "██████╔╝██║   ██║██║  ███╗██║   ██║█████╗  ",
@@ -18,11 +20,23 @@ public class StartMenu {
             "╚═╝  ╚═╝ ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝"
     };
 
+    private static final String[] LOGO = {
+            "  ██▀███   ▒█████    ▄████  █    ██ ▓█████ ",
+            " ▓██ ▒ ██▒▒██▒  ██▒ ██▒ ▀█▒ ██  ▓██▒▓█   ▀ ",
+            " ▓██ ░▄█ ▒▒██░  ██▒▒██░▄▄▄░▓██  ▒██░▒███   ",
+            " ▒██▀▀█▄  ▒██   ██░░▓█  ██▓▓▓█  ░██░▒▓█  ▄ ",
+            " ░██▓ ▒██▒░ ████▓▒░░▒▓███▀▒▒▒█████▓ ░▒████▒",
+            " ░ ▒▓ ░▒▓░░ ▒░▒░▒░  ░▒   ▒ ░▒▓▒ ▒ ▒ ░░ ▒░ ░",
+            "   ░▒ ░ ▒░  ░ ▒ ▒░   ░   ░ ░░▒░ ░ ░  ░ ░  ░",
+            "   ░░   ░ ░ ░ ░ ▒  ░ ░   ░  ░░░ ░ ░    ░   ",
+            "    ░         ░ ░        ░    ░        ░  ░"
+    };
+
     private static final List<String> ITEMS = List.of(
-            "Новая игра",
-            "Продолжить",
+            "Новая игра      ",
+            "Продолжить      ",
             "Таблица рекордов",
-            "Выход"
+            "Выход           "
     );
 
     private int selected = 0;
@@ -64,26 +78,41 @@ public class StartMenu {
 
     private void draw(Screen screen) throws IOException {
         TextGraphics g = screen.newTextGraphics();
-        g.setForegroundColor(TextColor.ANSI.WHITE);
+        g.setForegroundColor(TextColor.ANSI.YELLOW);
 
         int width = screen.getTerminalSize().getColumns();
 
         // LOGO
         for (int i = 0; i < LOGO.length; i++) {
             int x = (width - LOGO[i].length()) / 2;
-            g.putString(x, i + 5, LOGO[i]);
+            drawString(g,x,i+5,LOGO[i],"█▀▄",TextColor.ANSI.YELLOW,TextColor.ANSI.WHITE);
+            //g.putString(x, i + 5, LOGO[i]);
         }
 
         // MENU
         int startY = LOGO.length + 10;
         for (int i = 0; i < ITEMS.size(); i++) {
-            String prefix = (i == selected) ? "> " : "  ";
-            String text = prefix + (i + 1) + ". " + ITEMS.get(i);
+            String prefix = (i == selected) ? ">>> " : "    ";
+            String postfix = (i == selected) ? " <<<" : "    ";
+            String text = prefix + (i + 1) + ". " + ITEMS.get(i) + postfix;
 
-            int x = width / 2 - 10;
-            g.putString(x, startY + i, text);
+            int x = width / 2 - 12;
+            drawString(g,x,startY + i,text,"<>",TextColor.ANSI.YELLOW,TextColor.ANSI.WHITE);
+            //g.putString(x, startY + i, text);
         }
         screen.refresh();
+    }
+
+    private void drawString(TextGraphics g, int x, int y, String text, String symbols, TextColor baseColor, TextColor otherColor ) {
+        Set<Character> symbolSet = new HashSet<>();
+        for (char c : symbols.toCharArray())
+            symbolSet.add(c);
+
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            g.setForegroundColor(symbolSet.contains(c) ? otherColor : baseColor);
+            g.putString(x + i, y, String.valueOf(c));
+        }
     }
 
     private StartMenuAction mapSelection() {

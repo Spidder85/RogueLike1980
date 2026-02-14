@@ -1,7 +1,7 @@
 package datalayer.mapper;
 
 import datalayer.dto.PlayerDTO;
-import domain.Item;
+import domain.item.Item;
 import domain.character.Player;
 
 public class PlayerMapper {

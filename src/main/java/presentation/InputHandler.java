@@ -3,10 +3,11 @@ package presentation;
 import com.googlecode.lanterna.input.KeyStroke;
 //import com.googlecode.lanterna.screen.Screen;
 import datalayer.SessionRepository;
-import domain.ItemType;
+import domain.item.ItemType;
 import domain.game.GameEngine;
 import domain.game.GameEvent;
 import domain.game.GameSession;
+import settings.GameSettings;
 
 public class InputHandler {
     private final GameEngine engine;
@@ -22,8 +23,8 @@ public class InputHandler {
         this.repository = repository;
     }
 
-    public boolean handle(KeyStroke key, GameSession session, LevelRenderer renderer) {
-        if (key.getCharacter() == null) return true;
+    public InputResult handle(KeyStroke key, GameSession session, LevelRenderer renderer) {
+        if (key.getCharacter() == null) return InputResult.NO_ACTION;
 
         GameEvent e;// = null;
 
@@ -38,18 +39,20 @@ public class InputHandler {
             case 'k' -> e = useItem(session, ItemType.ELIXIR);
             case 'e' -> e = useItem(session, ItemType.SCROLL);
 
-            case 'q' -> { return false; }
-            default -> { return true; }
+            case 'q' -> { return InputResult.EXIT; }
+            default -> { return InputResult.NO_ACTION; }
         }
 
         if (e != null) {// || "exit".equals(e.getType())) {
             session.pushEvent(e);
             if (e.getType().equals("levelChanged")) {
-                renderer.fog.reset();
+                if (GameSettings.ENABLE_FOG_OF_WAR)
+                    renderer.fog.reset();
                 repository.save(session);
             }
+            //return InputResult.ACTION;
         }
-        return true;
+        return InputResult.ACTION;
     }
 
     private GameEvent useItem(GameSession session, ItemType type) {

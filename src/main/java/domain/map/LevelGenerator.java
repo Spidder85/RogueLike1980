@@ -1,7 +1,7 @@
 package domain.map;
 
-import domain.Item;
-import domain.ItemFactory;
+import domain.item.Item;
+import domain.item.ItemFactory;
 import domain.common.Position;
 import domain.enemy.EnemyFactory;
 import settings.GameSettings;
@@ -29,6 +29,18 @@ public class LevelGenerator {
 
         // 4. контент (враги, предметы)
         populate(level);
+
+        // 5. двери и ключи
+        if (GameSettings.ENABLE_KEY){
+            for (int i = 0; i < 20; i++) {
+                DoorKeyGenerator.generate(level, random);
+
+                if(LevelAccessibilityValidator.isReachable(level)) {
+                    break;
+                }
+                level.clearDoorsAndKeys();
+            }
+        }
 
         return level;
     }

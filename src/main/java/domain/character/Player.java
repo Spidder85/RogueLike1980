@@ -1,7 +1,8 @@
 package domain.character;
 
-import domain.Item;
+import domain.item.Item;
 import domain.common.Position;
+import domain.item.KeyColor;
 
 import java.util.*;
 
@@ -212,4 +213,28 @@ public class Player {
         health = Math.min(health, maxHealth);
     }
 
+//    private int keyMask = 0;
+//    public void addKey(KeyColor color) {
+//        keyMask |= color.bit();
+//    }
+//
+//    public boolean hasKey(KeyColor color) {
+//        return (keyMask & color.bit()) != 0;
+//    }
+//
+//    public void useKey(KeyColor color) {
+//        keyMask &= ~color.bit();
+//    }
+//
+//    public int getKeyMask() {
+//        return keyMask;
+//    }
+//
+//    public void setKeyMask(int keyMask) {
+//        this.keyMask = keyMask;
+//    }
+//
+//    public void clearKeys() {
+//        setKeyMask(0);
+//    }
 }

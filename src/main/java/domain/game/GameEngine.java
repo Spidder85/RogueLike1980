@@ -1,9 +1,11 @@
 package domain.game;
 
-import domain.Item;
-import domain.ItemType;
+import domain.character.Backpack;
+import domain.item.Item;
+import domain.item.ItemType;
 import domain.character.Player;
 import domain.common.Position;
+import domain.map.DoorMeta;
 import domain.enemy.Enemy;
 import domain.map.Level;
 import domain.map.Room;
@@ -36,10 +38,12 @@ public class GameEngine {
         Level nextLevel = levelManager.getLevel(nextLevelNumber);
         session.setCurrentLevel(nextLevel);
         Player p = session.getPlayer();
+        p.getBackpack().clearKeys();  // очищаем ключи перед переходом на новый уровень
+
         Room start = nextLevel.startRoom;
         p.setPosition(
-            start.getCenter().x,
-            start.getCenter().y
+            start.getRandomPoint().x,// .getCenter().x,
+            start.getRandomPoint().y //.getCenter().y
         );
         return new GameEvent("levelChanged", 0, 0, nextLevelNumber, "");
     }
@@ -52,11 +56,24 @@ public class GameEngine {
         int newY = player.getY() + dy;
         Position newPos = new Position(newX, newY);
 
+        Object obj = currentLevel.getObjectAt(newPos);
+
+        if (obj instanceof DoorMeta door) {
+            Backpack bp = player.getBackpack();
+            if (bp.hasKey(door.getColor())) {
+                bp.useKey(door.getColor()); // тратим ключ
+                currentLevel.removeDoor(door);  // открываем дверь
+
+                session.pushEvent(new GameEvent("doorOpened", newX, newY, 0, door.getColor().name()));
+            } else {
+                session.pushEvent(new GameEvent("doorLocked", newX, newY, 0, door.getColor().name()));
+                return null;
+            }
+        }
+
         if (!currentLevel.isWalkable(newPos)) {
             return null;//new GameEvent("blocked", newX, newY, 0, "");
         }
-
-        Object obj = currentLevel.getObjectAt(newPos);
 
         if (obj instanceof Enemy enemy) {   // если "наступили" на врага
             double hitChance = (double) player.getAgility() / (enemy.getAgility() + player.getAgility());
@@ -82,10 +99,16 @@ public class GameEngine {
         player.setPosition(newX, newY);
 
         if (obj instanceof Item item) { // если "наступили" на предмет
-            boolean picked = player.getBackpack().addItem(item);
-            if (picked)
+            if(item.getType() == ItemType.KEY) {
+                player.getBackpack().addKey(item.getKeyColor());
                 currentLevel.removeItem(item);
-            return new GameEvent("pickup", newX, newY, item.getCost(), item.getType().name());
+                return new GameEvent("key", newX, newY, item.getCost(), item.getSubtype());
+            }else {
+                boolean picked = player.getBackpack().addItem(item);
+                if (picked)
+                    currentLevel.removeItem(item);
+                return new GameEvent("pickup", newX, newY, item.getCost(), item.getType().name());
+            }
         }
 
         if (currentLevel.isExit(newPos)) {  // если "наступили" на выход

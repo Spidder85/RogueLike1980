@@ -3,8 +3,8 @@ package presentation;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
-import domain.Item;
-import domain.ItemType;
+import domain.item.Item;
+import domain.item.ItemType;
 import domain.character.Player;
 
 import java.util.List;

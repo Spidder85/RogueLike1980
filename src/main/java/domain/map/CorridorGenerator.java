@@ -39,7 +39,8 @@ public class CorridorGenerator {
                         e.a.getExitPointToward(e.b),// e.a.getCenter(),
                         e.b.getExitPointToward(e.a),// e.b.getCenter(),
                         rooms,
-                        e.a
+                        e.a,
+                        e.b
                     )
                 );
                 connected.add(next);

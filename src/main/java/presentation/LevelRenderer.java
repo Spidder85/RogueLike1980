@@ -3,12 +3,13 @@ package presentation;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
-import domain.Item;
+import domain.item.Item;
 import domain.character.Player;
 import domain.common.Position;
 import domain.enemy.Enemy;
 import domain.game.GameSession;
 import domain.map.Corridor;
+import domain.map.DoorMeta;
 import domain.map.Level;
 import domain.map.Room;
 
@@ -58,11 +59,11 @@ public class LevelRenderer {
         g.setForegroundColor(TextColor.ANSI.WHITE);
 
         for (Room room : level.getRooms()) {
-            drawRoom(room, player);
+            drawRoom(room, player, level);
         }
     }
 
-    private void drawRoom(Room room, Player player) {
+    private void drawRoom(Room room, Player player, Level level) {
         // стены
         g.setForegroundColor(TextColor.ANSI.YELLOW);
         for (Position p : room.walls) {
@@ -86,8 +87,22 @@ public class LevelRenderer {
 
         // двери
         for (Position p : room.doors) {
-            if (fog.wasVisited(p.x, p.y))
+//            if (fog.wasVisited(p.x, p.y))
+//                g.putString(p.x, p.y, "╬");
+            g.setForegroundColor(TextColor.ANSI.YELLOW);
+            if (!fog.wasVisited(p.x, p.y)) continue;
+            DoorMeta door = level.getDoorAt(p);
+            if (door == null) {
                 g.putString(p.x, p.y, "╬");
+                continue;
+//            }
+//            if (door.isOpen()) {
+//                g.putString(p.x, p.y, "╬");
+//                continue;
+            } else {
+                g.setForegroundColor(door.getColor().toColor());
+                g.putString(p.x, p.y, "▣"); // ▓
+            }
         }
 
         // пол
@@ -95,7 +110,7 @@ public class LevelRenderer {
         g.setForegroundColor(TextColor.ANSI.WHITE);
         for (int y = room.y + 1; y < room.y + room.height - 1; y++) {
             for (int x = room.x + 1; x < room.x + room.width - 1; x++) {
-                g.putString(x, y, ".");
+                g.putString(x, y, "∙");
             }
         }
     }
@@ -168,7 +183,7 @@ public class LevelRenderer {
     private void drawPlayer(Player player) {
         Position p = player.getPosition();
         g.setForegroundColor(TextColor.ANSI.CYAN);
-        g.putString(p.x, p.y, "☺"); // 🙂 ☺
+        g.putString(p.x, p.y, "☻"); // 🙂 ☺
     }
 
     private TextColor colorByEnemy(Enemy enemy) {
@@ -176,7 +191,7 @@ public class LevelRenderer {
             case ZOMBIE -> TextColor.ANSI.GREEN;
             case VAMPIRE -> TextColor.ANSI.RED;
             case GHOST -> TextColor.ANSI.WHITE;
-            case OGRE -> TextColor.ANSI.YELLOW;
+            case OGRE -> new TextColor.RGB(255, 165, 0); // .ANSI.YELLOW;
             case SNAKE_MAGE -> TextColor.ANSI.WHITE;
             case MIMIC -> TextColor.ANSI.WHITE;
             default -> TextColor.ANSI.WHITE;
@@ -190,6 +205,7 @@ public class LevelRenderer {
             case SCROLL -> TextColor.ANSI.WHITE;
             case WEAPON -> TextColor.ANSI.WHITE;
             case TREASURE -> new TextColor.RGB(255,215,0);
+            case KEY -> item.getKeyColor().toColor();
             default -> TextColor.ANSI.WHITE;
         };
     }
@@ -201,6 +217,7 @@ public class LevelRenderer {
             case ELIXIR -> "!";     // 🧪
             case SCROLL -> "?";     // 📜
             case WEAPON -> "/";     // 🗡️
+            case KEY -> "❖";        // 🔑 ▣ ▦⧆𝌴 ▍▎
         };
     }
 

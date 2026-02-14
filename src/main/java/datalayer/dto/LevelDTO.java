@@ -11,4 +11,5 @@ public class LevelDTO {
     public List<ItemDTO> items;
 
     public Position exitPosition;
+    public List<DoorDTO> doors;
 }

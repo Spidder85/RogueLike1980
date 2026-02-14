@@ -9,12 +9,18 @@ import java.util.Set;
 
 public class Corridor {
     private final List<Position> path = new ArrayList<>();
+    private final Room from;
+    private final Room to;
 
-    public Corridor(Position start, Position end, List<Room> rooms, Room startR) {
-        //generateLPath(start, end, rooms);
-//        if (shouldUseSPath(start, end, rooms)) {
-        boolean isHorizontal = start.x == startR.x || start.x == (startR.x + startR.width-1);
-            generateSPath(start, end, rooms, isHorizontal);
+    public Corridor(Position start, Position end, List<Room> rooms, Room from, Room to) {
+        this.from = from;
+        this.to = to;
+
+        boolean isHorizontal =
+                start.x == from.x ||
+                start.x == (from.x + from.width - 1);
+
+        generateSPath(start, end, rooms, isHorizontal);
 //        } else {
 //            generateLPath(start, end, rooms);
 //        }
@@ -38,13 +44,6 @@ public class Corridor {
     }
 
     private void generateSPath(Position start, Position end, List<Room> rooms, boolean isHorizontal) {
-        // определяем основное направление
-        //boolean isHorizontal = Math.abs(start.x - end.x) >= Math.abs(start.y - end.y);
-
-
-//        int midX = (start.x + end.x) / 2;
-//        int midY = (start.y + end.y) / 2;
-
         int x = start.x;
         int y = start.y;
 
@@ -113,4 +112,7 @@ public class Corridor {
     public List<Position> getPath() {
         return path;
     }
+
+    public Room getFrom() { return from; }
+    public Room getTo() { return to; }
 }

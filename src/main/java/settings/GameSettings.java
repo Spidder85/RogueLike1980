@@ -24,11 +24,13 @@ public final class GameSettings {
     public static final int MAX_LEVELS = 21;
     public static final int FOG_RADIUS = 10;
 
-    public static final boolean ENABLE_FOG_OF_WAR = true; // вкл/выкл "Туман войны"
+    public static final boolean ENABLE_FOG_OF_WAR = false; // вкл/выкл "Туман войны"
 
     //public static final boolean ICON_MODE = false;    // отображение текстовых символов / иконок
 
     public static final int STATUS_LOG_SIZE = 8;
+
+    public static final boolean ENABLE_KEY = true;
 
     private GameSettings() {}
 }

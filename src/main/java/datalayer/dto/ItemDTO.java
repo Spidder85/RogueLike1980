@@ -13,4 +13,6 @@ public class ItemDTO {
 
     public int x;
     public int y;
+
+    public String keyColor;
 }

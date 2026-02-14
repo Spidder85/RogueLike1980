@@ -2,9 +2,9 @@ package presentation;
 
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
-import domain.Item;
-import domain.ItemType;
+import domain.item.ItemType;
 import domain.game.GameSession;
+import domain.item.KeyColor;
 import settings.GameSettings;
 
 public class StatsPanel {
@@ -55,6 +55,12 @@ public class StatsPanel {
         g.putString(x, yy++, "Оружие: " + session.getPlayer().getBackpack().getItems(ItemType.WEAPON).size());
         g.putString(x, yy++, "Золото: " + session.getPlayer().getBackpack().getTreasureAmount());
 
+        if (GameSettings.ENABLE_KEY) {
+            String s = "Ключи: ";
+            g.putString(x, yy, s);
+            getKeyMaskString(session.getPlayer().getBackpack().getKeyMask(), x + s.length(), yy++);
+        }
+
         yy++;
         g.putString(x, yy++, "=== Меню ===");
         g.putString(x, yy++,"Controls:");
@@ -66,5 +72,17 @@ public class StatsPanel {
         g.putString(x, yy++,"Q - Quit");
 
 
+    }
+    private void getKeyMaskString(int keyMask, int x, int y) {
+        if (keyMask != 0) {
+            for (KeyColor key : KeyColor.values()) {
+                if ((keyMask & key.bit()) != 0) {
+                    g.setForegroundColor(key.toColor());
+                    g.putString(x, y, "❖");
+                    x += 2;
+                }
+            }
+            g.setForegroundColor(new TextColor.RGB(127, 127, 127));
+        }
     }
 }

@@ -1,8 +1,9 @@
 package datalayer.mapper;
 
 import datalayer.dto.ItemDTO;
-import domain.Item;
-import domain.ItemType;
+import domain.item.Item;
+import domain.item.ItemType;
+import domain.item.KeyColor;
 
 public class ItemMapper {
 
@@ -22,6 +23,10 @@ public class ItemMapper {
         dto.x = i.getX();
         dto.y = i.getY();
 
+        if (i.getType() == ItemType.KEY && i.getKeyColor() != null) {
+            dto.keyColor = i.getKeyColor().name();
+        }
+
         return dto;
     }
 
@@ -36,6 +41,9 @@ public class ItemMapper {
                 dto.cost,
                 dto.duration
         );
+        if (dto.keyColor != null)
+            item.setKeyColor(KeyColor.valueOf(dto.keyColor));
+
         item.setPosition(dto.x, dto.y);
         return item;
     }

@@ -1,6 +1,6 @@
 package domain.map;
 
-import domain.Item;
+import domain.item.Item;
 import domain.enemy.Enemy;
 import domain.common.Position;
 
@@ -176,5 +176,12 @@ public class Room {
             return new Position(getCenter().x, y);
         //if (min == bottomGap)
         return new Position(getCenter().x, y + height - 1);
+    }
+
+    public Position getRandomDoorPosition(Random random) {
+        if (doors.isEmpty()) {
+            return null;
+        }
+        return doors.get(random.nextInt(doors.size()));
     }
 }
