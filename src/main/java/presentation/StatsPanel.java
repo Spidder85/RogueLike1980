@@ -29,7 +29,7 @@ public class StatsPanel {
     }
 
     public void render(GameSession session) {
-        int yy = y;
+        int yy = session.isTopDown()? y : (int)Math.floor(GameSettings.GAME_HEIGHT * GameSettings.MINIMAP_SCALE + 1);
         g.setForegroundColor(new TextColor.RGB(127,127,127));
         g.putString(x, yy++, "=== СТАТИСТИКА ===");
         g.putString(x, yy++, "Сокровища: " + session.getStats().getTreasure());
@@ -46,6 +46,7 @@ public class StatsPanel {
         g.putString(x, yy++, "Ловкость: " + session.getPlayer().getAgility());
         g.putString(x, yy++, "Сила: " + session.getPlayer().getStrength());
         g.putString(x, yy++, "Оружие: " + session.getPlayer().getCurrentWeapon());
+        g.putString(x, yy++, "Angle: " + session.getPlayer().getAngle());
 
         yy++;
         g.putString(x, yy++, "=== Инвентарь ===");
@@ -64,7 +65,13 @@ public class StatsPanel {
         yy++;
         g.putString(x, yy++, "=== Меню ===");
         g.putString(x, yy++,"Controls:");
-        g.putString(x, yy++,"W/A/S/D - Move");
+        if (session.isTopDown()) {
+            g.putString(x, yy++, "W/A/S/D - Move");
+        } else {
+            g.putString(x, yy++, "W/A - Forward/Backward");
+            g.putString(x, yy++, "D/S - Turn Left/Right");
+            g.putString(x, yy++, "Z/X - Strafe Left/Right");
+        }
         g.putString(x, yy++,"H - Use Weapon");
         g.putString(x, yy++,"J - Use Food");
         g.putString(x, yy++,"K - Use Elixir");

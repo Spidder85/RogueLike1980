@@ -32,7 +32,7 @@ public class GameEngine {
 
         if (nextLevelNumber > GameSettings.MAX_LEVELS) {
             session.finishGame();
-            return new GameEvent("gameFinished", 0, 0, 0, "");
+            return new GameEvent("gameFinished", 0, "");
         }
 
         Level nextLevel = levelManager.getLevel(nextLevelNumber);
@@ -45,15 +45,135 @@ public class GameEngine {
             start.getRandomPoint().x,// .getCenter().x,
             start.getRandomPoint().y //.getCenter().y
         );
-        return new GameEvent("levelChanged", 0, 0, nextLevelNumber, "");
+        return new GameEvent("levelChanged", nextLevelNumber, "");
     }
 
-    public GameEvent movePlayer(int dx, int dy) {
+    public GameEvent tryMoveCell(int newX, int newY) {
         Player player = session.getPlayer();
         Level currentLevel = session.getCurrentLevel();
 
-        int newX = player.getX() + dx;
-        int newY = player.getY() + dy;
+        Position newPos = new Position(newX, newY);
+
+        Object obj = currentLevel.getObjectAt(newPos);
+
+        // если "наступили" на дверь
+        if (obj instanceof DoorMeta door) {
+            Backpack bp = player.getBackpack();
+
+            if (bp.hasKey(door.getColor())) {
+                bp.useKey(door.getColor()); // тратим ключ
+                currentLevel.removeDoor(door);  // открываем дверь
+
+                session.pushEvent(new GameEvent(
+                        "doorOpened", 0, door.getColor().name()
+                ));
+            } else {
+                session.pushEvent(new GameEvent(
+                        "doorLocked", 0, door.getColor().name()
+                ));
+                return null;
+            }
+        }
+
+        if (!currentLevel.isWalkable(newPos)) {
+            return null;
+        }
+
+        // если "наступили" на врага
+        if (obj instanceof Enemy enemy) {   // если "наступили" на врага
+            double hitChance = (double) player.getAgility() / (enemy.getAgility() + player.getAgility());
+            boolean isHit = Math.random() <= hitChance;
+            int damage = player.getStrength() + (player.getCurrentWeapon() != null ? player.getCurrentWeapon().getStrength() : 0);
+            if (isHit) isHit = enemy.takeDamage(damage);
+
+            if (!enemy.isAlive()) {
+                generateTreasure(enemy);
+                currentLevel.removeEnemy(enemy);
+                return new GameEvent("enemyKilled", 0, enemy.getType().name());
+            } else {
+                return new GameEvent(
+                        isHit ? "hit" : "miss",
+//                        newX,
+//                        newY,
+                        isHit ? damage : 0,
+                        enemy.getType().name()
+                );
+            }
+        }
+
+        player.setPosition(newX, newY);
+
+        if (obj instanceof Item item) { // если "наступили" на предмет
+            if(item.getType() == ItemType.KEY) {
+                player.getBackpack().addKey(item.getKeyColor());
+                currentLevel.removeItem(item);
+                return new GameEvent("key", item.getCost(), item.getSubtype());
+            }else {
+                boolean picked = player.getBackpack().addItem(item);
+                if (picked)
+                    currentLevel.removeItem(item);
+                return new GameEvent("pickup", item.getCost(), item.getType().name());
+            }
+        }
+
+        if (currentLevel.isExit(newPos)) {  // если "наступили" на выход
+            return goToNextLevel();
+        }
+        return null;
+    }
+
+    public GameEvent moveFP(int forward, int strafe) {
+        Player p = session.getPlayer();
+
+        if (forward == 0 && strafe == 0) {
+            return null;
+        }
+
+        double speed = 0.20;
+        double angle = p.getAngle();
+
+        // forward vector (0° = вправо)
+        double dirX = Math.cos(angle);
+        double dirY = Math.sin(angle);
+
+        // strafe vector (перпендикуляр вправо)
+        double strafeX = -dirY;
+        double strafeY = dirX;
+
+        // итоговый вектор смещения
+        double dx = dirX * forward + strafeX * strafe;
+        double dy = dirY * forward + strafeY * strafe;
+
+        // нормализуем вектор (нормализация диагонали)
+        double len = Math.sqrt(dx * dx + dy * dy);
+        if (len > 0) {
+            dx = (dx / len) * speed;
+            dy = (dy / len) * speed;
+        }
+
+        // wall sliding
+        // сначала пробуем двигаться по X
+        GameEvent eventX = movePlayer(dx, 0);
+        // затем по Y
+        GameEvent eventY = movePlayer(0, dy);
+
+        if (eventX != null) return eventX;
+        if (eventY != null) return eventY;
+
+        return null;
+    }
+
+    public void rotatePlayer(double delta) {
+        session.getPlayer().rotate(delta);
+    }
+
+    public GameEvent movePlayer(double dx, double dy) {
+        Player player = session.getPlayer();
+        Level currentLevel = session.getCurrentLevel();
+
+        double newX = player.getPosX() + dx;
+        double newY = player.getPosY() + dy;
+
         Position newPos = new Position(newX, newY);
 
         Object obj = currentLevel.getObjectAt(newPos);
@@ -64,9 +184,9 @@ public class GameEngine {
                 bp.useKey(door.getColor()); // тратим ключ
                 currentLevel.removeDoor(door);  // открываем дверь
 
-                session.pushEvent(new GameEvent("doorOpened", newX, newY, 0, door.getColor().name()));
+                session.pushEvent(new GameEvent("doorOpened", 0, door.getColor().name()));
             } else {
-                session.pushEvent(new GameEvent("doorLocked", newX, newY, 0, door.getColor().name()));
+                session.pushEvent(new GameEvent("doorLocked", 0, door.getColor().name()));
                 return null;
             }
         }
@@ -84,12 +204,10 @@ public class GameEngine {
             if (!enemy.isAlive()) {
                 generateTreasure(enemy);
                 currentLevel.removeEnemy(enemy);
-                return new GameEvent("enemyKilled", newX, newY, 0, enemy.getType().name());
+                return new GameEvent("enemyKilled", 0, enemy.getType().name());
             } else {
                 return new GameEvent(
                         isHit ? "hit" : "miss",
-                        newX,
-                        newY,
                         isHit ? damage : 0,
                         enemy.getType().name()
                 );
@@ -102,19 +220,19 @@ public class GameEngine {
             if(item.getType() == ItemType.KEY) {
                 player.getBackpack().addKey(item.getKeyColor());
                 currentLevel.removeItem(item);
-                return new GameEvent("key", newX, newY, item.getCost(), item.getSubtype());
+                return new GameEvent("key", item.getCost(), item.getSubtype());
             }else {
                 boolean picked = player.getBackpack().addItem(item);
                 if (picked)
                     currentLevel.removeItem(item);
-                return new GameEvent("pickup", newX, newY, item.getCost(), item.getType().name());
+                return new GameEvent("pickup", item.getCost(), item.getType().name());
             }
         }
 
         if (currentLevel.isExit(newPos)) {  // если "наступили" на выход
             return goToNextLevel();
         }
-        return null; //new GameEvent("moved", newX, newY, 0, "");
+        return null;
     }
 
     public void nextTurn() {
@@ -141,8 +259,6 @@ public class GameEngine {
             }
             return new GameEvent(
                     "weaponRemoved",
-                    player.getX(),
-                    player.getY(),
                     0,
                     ""
             );
@@ -173,8 +289,6 @@ public class GameEngine {
 
         return new GameEvent(
                 type == ItemType.WEAPON ? "weaponEquipped" : "usedItem",
-                player.getX(),
-                player.getY(),
                 0,
                 item.getSubtype()
         );

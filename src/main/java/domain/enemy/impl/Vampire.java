@@ -83,8 +83,6 @@ public class Vampire extends Enemy {
         player.decreaseMaxHealth(drain);
         events.add(new GameEvent(
                 "vampireDrain",
-                player.getX(),
-                player.getY(),
                 drain,
                 EnemyType.VAMPIRE.name()
         ));

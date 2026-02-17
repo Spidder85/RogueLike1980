@@ -3,6 +3,7 @@ package domain.game;
 import domain.character.Player;
 import domain.map.Level;
 import domain.map.Room;
+import domain.view.ViewMode;
 import presentation.StatusLog;
 import settings.GameSettings;
 
@@ -14,6 +15,8 @@ public class GameSession {
     private Level currentLevel;
     private boolean gameOver;
     private boolean finished;
+
+    private ViewMode viewMode = ViewMode.TOP_DOWN;
 
     private long worldSeed; // Seed для генератора случайных чисел
 
@@ -81,5 +84,26 @@ public class GameSession {
 
     public void setWorldSeed(long worldSeed) {
         this.worldSeed = worldSeed;
+    }
+
+    // Задание 9: First Person view (полное 3D)
+    public ViewMode getViewMode() {
+        return viewMode;
+    }
+
+    public void setViewMode(ViewMode viewMode) {
+        this.viewMode = viewMode;
+    }
+
+    public boolean isTopDown() {
+        return viewMode == ViewMode.TOP_DOWN;
+    }
+
+    public boolean isFirstPerson() {
+        return viewMode == ViewMode.FIRST_PERSON;
+    }
+
+    public void toggleViewMode() {
+        viewMode = isTopDown() ? ViewMode.FIRST_PERSON : ViewMode.TOP_DOWN;
     }
 }

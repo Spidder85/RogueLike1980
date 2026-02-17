@@ -72,8 +72,6 @@ public class SnakeMage extends Enemy {
             player.putToSleep(1);
             events.add(new GameEvent(
                     "snakeMagePutToSleep",
-                    player.getX(),
-                    player.getY(),
                     0,
                     EnemyType.SNAKE_MAGE.name()
             ));

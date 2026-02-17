@@ -29,8 +29,17 @@ public final class GameSettings {
     //public static final boolean ICON_MODE = false;    // отображение текстовых символов / иконок
 
     public static final int STATUS_LOG_SIZE = 8;
+    public static final int STATS_PANEL_WIDTH = 40;
 
     public static final boolean ENABLE_KEY = true;
+
+    // настройки для FIRST_PERSON_VIEW
+    public static final double FP_STEP = 0.5;          // шаг луча // был 0,5 в тумане
+    public static final double FP_ROTATION = Math.PI / 16.0; // угол поворота луча 32 шага
+    public static final double FP_FOV = Math.PI / 3.0;  // угол обзора - 60°
+    public static final double MINIMAP_SCALE = 0.5;    // масштаб карты - 1/3 от оригинала
+
+
 
     private GameSettings() {}
 }

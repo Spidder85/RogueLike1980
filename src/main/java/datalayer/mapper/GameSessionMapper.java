@@ -4,6 +4,7 @@ import datalayer.dto.*;
 import domain.character.Player;
 import domain.game.GameSession;
 import domain.map.Level;
+import domain.view.ViewMode;
 
 public class GameSessionMapper {
     public static GameSessionDTO toDTO(GameSession session) {
@@ -12,6 +13,8 @@ public class GameSessionMapper {
         dto.stats = GameStatsMapper.toDTO(session.getStats());
         dto.level = LevelMapper.toDTO(session.getCurrentLevel());
         dto.worldSeed = session.getWorldSeed();
+        dto.viewMode = session.getViewMode().name();
+
         return dto;
     }
 
@@ -25,6 +28,10 @@ public class GameSessionMapper {
 
         Level level = LevelMapper.fromDTO(dto.level, dto.worldSeed);
         session.setCurrentLevel(level);
+
+        if (dto.viewMode != null) {
+            session.setViewMode(ViewMode.valueOf(dto.viewMode));
+        }
 
         return session;
     }

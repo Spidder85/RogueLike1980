@@ -22,7 +22,7 @@ public class GameApplication {
         Screen screen = new DefaultTerminalFactory()
                 .setInitialTerminalSize(
                         new com.googlecode.lanterna.TerminalSize(
-                                GameSettings.GAME_WIDTH + 40,
+                                GameSettings.GAME_WIDTH + GameSettings.STATS_PANEL_WIDTH,
                                 GameSettings.GAME_HEIGHT + GameSettings.STATUS_LOG_SIZE + 6
                         )
                 )

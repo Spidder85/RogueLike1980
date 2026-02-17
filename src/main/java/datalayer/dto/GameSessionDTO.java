@@ -6,4 +6,6 @@ public class GameSessionDTO {
     public LevelDTO level;
 
     public long worldSeed;
+
+    public String viewMode;
 }

@@ -2,6 +2,7 @@ package presentation;
 
 import com.googlecode.lanterna.input.KeyStroke;
 //import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.input.KeyType;
 import datalayer.SessionRepository;
 import domain.item.ItemType;
 import domain.game.GameEngine;
@@ -24,16 +25,39 @@ public class InputHandler {
     }
 
     public InputResult handle(KeyStroke key, GameSession session, LevelRenderer renderer) {
+        if (key.getKeyType() == KeyType.F10) {
+            session.toggleViewMode();
+            return InputResult.NO_ACTION;
+        }
         if (key.getCharacter() == null) return InputResult.NO_ACTION;
 
-        GameEvent e;// = null;
+        GameEvent e = null;
+        boolean fp = session.isFirstPerson();
 
         switch (key.getCharacter()) {
-            case 'w' -> e = engine.movePlayer(0, -1);
-            case 'a' -> e = engine.movePlayer(-1, 0);
-            case 's' -> e = engine.movePlayer(0, 1);
-            case 'd' -> e = engine.movePlayer(1, 0);
+            // движение
+            case 'w' -> e = fp ? engine.moveFP(1, 0) : engine.movePlayer(0, -1);
+            case 's' -> e = fp ? engine.moveFP(-1, 0) : engine.movePlayer(0, 1);
 
+            case 'a' -> {
+                if (fp) engine.rotatePlayer(-GameSettings.FP_ROTATION);
+                else e = engine.movePlayer(-1, 0);
+            }
+
+            case 'd' -> {
+                if (fp) engine.rotatePlayer(GameSettings.FP_ROTATION);
+                else e = engine.movePlayer(1, 0);
+            }
+            // стрейфы только в FP
+            case 'z' -> {
+                if (fp) e = engine.moveFP(0, -1);
+                else return InputResult.NO_ACTION;
+            }
+            case 'x' -> {
+                if (fp) e = engine.moveFP(0, 1);
+                else return InputResult.NO_ACTION;
+            }
+            // предметы
             case 'h' -> e = useItem(session, ItemType.WEAPON);
             case 'j' -> e = useItem(session, ItemType.FOOD);
             case 'k' -> e = useItem(session, ItemType.ELIXIR);
@@ -43,14 +67,13 @@ public class InputHandler {
             default -> { return InputResult.NO_ACTION; }
         }
 
-        if (e != null) {// || "exit".equals(e.getType())) {
+        if (e != null) {
             session.pushEvent(e);
             if (e.getType().equals("levelChanged")) {
                 if (GameSettings.ENABLE_FOG_OF_WAR)
                     renderer.fog.reset();
                 repository.save(session);
             }
-            //return InputResult.ACTION;
         }
         return InputResult.ACTION;
     }

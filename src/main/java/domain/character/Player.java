@@ -2,7 +2,6 @@ package domain.character;
 
 import domain.item.Item;
 import domain.common.Position;
-import domain.item.KeyColor;
 
 import java.util.*;
 
@@ -17,7 +16,12 @@ public class Player {
     private int x;
     private int y;
 
+    private double posX;
+    private double posY;
+
     private final Backpack backpack = new Backpack();
+
+    private double angle = 0.0; // угол поворота игрока (для 3D режима)
 
     // -------- состояния --------
     private boolean sleeping = false; // для эффекта змея-мага
@@ -90,10 +94,18 @@ public class Player {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+        this.posX = x + 0.5;
+        this.posY = y + 0.5;
+    }
+    public void setPosition(double x, double y) {
+        this.posX = x;
+        this.posY = y;
+        this.x = (int) Math.floor(x);
+        this.y = (int) Math.floor(y);
     }
 
     public Position getPosition() {
-        return new Position(x, y);
+        return new Position(posX, posY);
     }
 
     public void move(int dx, int dy) {
@@ -213,28 +225,31 @@ public class Player {
         health = Math.min(health, maxHealth);
     }
 
-//    private int keyMask = 0;
-//    public void addKey(KeyColor color) {
-//        keyMask |= color.bit();
-//    }
-//
-//    public boolean hasKey(KeyColor color) {
-//        return (keyMask & color.bit()) != 0;
-//    }
-//
-//    public void useKey(KeyColor color) {
-//        keyMask &= ~color.bit();
-//    }
-//
-//    public int getKeyMask() {
-//        return keyMask;
-//    }
-//
-//    public void setKeyMask(int keyMask) {
-//        this.keyMask = keyMask;
-//    }
-//
-//    public void clearKeys() {
-//        setKeyMask(0);
-//    }
+    public double getAngle() {
+        return angle;
+    }
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
+    public void rotate(double delta) {
+        angle += delta;
+        double twoPi = Math.PI * 2;
+        double epsilon = 1e-12;
+
+        if (angle < 0) {
+            if (Math.abs(angle) < epsilon) angle = 0;
+            else angle += twoPi;
+        }
+        if (angle > twoPi) {
+            if (Math.abs(angle - twoPi) < epsilon) angle = 0;
+            else angle -= twoPi;
+        }
+    }
+
+    public double getPosX() {
+        return posX;
+    }
+    public double getPosY() {
+        return posY;
+    }
 }

@@ -42,16 +42,12 @@ public class TurnManager {
                         }
                         events.add(new GameEvent(
                                 isHit ? "enemyHit" : "enemyMiss",
-                                player.getX(),
-                                player.getY(),
                                 isHit ? damage : 0,
                                 enemy.getType().name()
                         ));
                         if (!player.isAlive()) {
                             events.add(new GameEvent(
                                     "playerKilled",
-                                    player.getX(),
-                                    player.getY(),
                                     0,
                                     ""
                             ));
