@@ -111,11 +111,11 @@ public class AsciiSprite {
     }
 
     public int getFG(int x, int y) {
-        return getColorRaw(x, y) & 0x0F;
+        return getColorRaw(x, y) & 0xFF;
     }
 
     public int getBG(int x, int y) {
-        return (getColorRaw(x, y) >> 4) & 0x0F;
+        return (getColorRaw(x, y) >> 8) & 0xFF;
     }
 
     // =========================================================
@@ -135,11 +135,11 @@ public class AsciiSprite {
     }
 
     public int sampleFG(double u, double v) {
-        return sampleColorRaw(u, v) & 0x0F;
+        return sampleColorRaw(u, v) & 0xFF;
     }
 
     public int sampleBG(double u, double v) {
-        return (sampleColorRaw(u, v) >> 4) & 0x0F;
+        return (sampleColorRaw(u, v) >> 8) & 0xFF;
     }
 
     // =========================================================

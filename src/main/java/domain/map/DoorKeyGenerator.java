@@ -54,11 +54,11 @@ public class DoorKeyGenerator {
 
     private static void placeKey(Level level, Room room, KeyColor color, Random random) {
         Position p = room.getRandomFreePoint(
-                pos -> level.getObjectAt(pos) == null
+                pos -> level.getObjectAt(pos, true) == null
         );
 
         Item key = ItemFactory.key(color);
-        key.setPosition(p.x, p.y);
+        key.setPosition(p);
         level.addItem(key);
     }
 

@@ -12,8 +12,8 @@ public final class Position {
     public Position(int x, int y) {
         this.x = x;
         this.y = y;
-        this.dX = x + 0.1;
-        this.dY = y + 0.1;
+        this.dX = x + 0.5;
+        this.dY = y + 0.5;
     }
 
     public Position(double x, double y) {

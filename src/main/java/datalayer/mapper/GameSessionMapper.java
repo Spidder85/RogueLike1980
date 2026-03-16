@@ -2,6 +2,7 @@ package datalayer.mapper;
 
 import datalayer.dto.*;
 import domain.character.Player;
+import domain.game.BalanceMode;
 import domain.game.GameSession;
 import domain.map.Level;
 import domain.view.ViewMode;
@@ -14,6 +15,7 @@ public class GameSessionMapper {
         dto.level = LevelMapper.toDTO(session.getCurrentLevel());
         dto.worldSeed = session.getWorldSeed();
         dto.viewMode = session.getViewMode().name();
+        dto.nextLevelBalanceMode = session.getNextLevelBalanceMode().name();
 
         return dto;
     }
@@ -24,13 +26,15 @@ public class GameSessionMapper {
         GameSession session = new GameSession(player);
         session.setWorldSeed(dto.worldSeed);
 
-        GameStatsMapper.fromDTO(dto.stats, session.getStats());
-
         Level level = LevelMapper.fromDTO(dto.level, dto.worldSeed);
         session.setCurrentLevel(level);
+        GameStatsMapper.fromDTO(dto.stats, session.getStats());
 
         if (dto.viewMode != null) {
             session.setViewMode(ViewMode.valueOf(dto.viewMode));
+        }
+        if (dto.nextLevelBalanceMode != null) {
+            session.setNextLevelBalanceMode(BalanceMode.valueOf(dto.nextLevelBalanceMode));
         }
 
         return session;

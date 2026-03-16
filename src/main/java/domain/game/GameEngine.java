@@ -35,7 +35,14 @@ public class GameEngine {
             return new GameEvent("gameFinished", 0, "");
         }
 
-        Level nextLevel = levelManager.getLevel(nextLevelNumber);
+        BalanceMode nextBalanceMode = BalanceEvaluator.evaluate(
+                currentLevel.getIndex(),
+                session.getPlayer(),
+                session.getStats().currentLevelSnapshot()
+        );
+        session.setNextLevelBalanceMode(nextBalanceMode);
+
+        Level nextLevel = levelManager.getOrCreateLevel(nextLevelNumber, nextBalanceMode);
         session.setCurrentLevel(nextLevel);
         Player p = session.getPlayer();
         p.getBackpack().clearKeys();  // очищаем ключи перед переходом на новый уровень
@@ -48,80 +55,6 @@ public class GameEngine {
         return new GameEvent("levelChanged", nextLevelNumber, "");
     }
 
-    public GameEvent tryMoveCell(int newX, int newY) {
-        Player player = session.getPlayer();
-        Level currentLevel = session.getCurrentLevel();
-
-        Position newPos = new Position(newX, newY);
-
-        Object obj = currentLevel.getObjectAt(newPos);
-
-        // если "наступили" на дверь
-        if (obj instanceof DoorMeta door) {
-            Backpack bp = player.getBackpack();
-
-            if (bp.hasKey(door.getColor())) {
-                bp.useKey(door.getColor()); // тратим ключ
-                currentLevel.removeDoor(door);  // открываем дверь
-
-                session.pushEvent(new GameEvent(
-                        "doorOpened", 0, door.getColor().name()
-                ));
-            } else {
-                session.pushEvent(new GameEvent(
-                        "doorLocked", 0, door.getColor().name()
-                ));
-                return null;
-            }
-        }
-
-        if (!currentLevel.isWalkable(newPos)) {
-            return null;
-        }
-
-        // если "наступили" на врага
-        if (obj instanceof Enemy enemy) {   // если "наступили" на врага
-            double hitChance = (double) player.getAgility() / (enemy.getAgility() + player.getAgility());
-            boolean isHit = Math.random() <= hitChance;
-            int damage = player.getStrength() + (player.getCurrentWeapon() != null ? player.getCurrentWeapon().getStrength() : 0);
-            if (isHit) isHit = enemy.takeDamage(damage);
-
-            if (!enemy.isAlive()) {
-                generateTreasure(enemy);
-                currentLevel.removeEnemy(enemy);
-                return new GameEvent("enemyKilled", 0, enemy.getType().name());
-            } else {
-                return new GameEvent(
-                        isHit ? "hit" : "miss",
-//                        newX,
-//                        newY,
-                        isHit ? damage : 0,
-                        enemy.getType().name()
-                );
-            }
-        }
-
-        player.setPosition(newX, newY);
-
-        if (obj instanceof Item item) { // если "наступили" на предмет
-            if(item.getType() == ItemType.KEY) {
-                player.getBackpack().addKey(item.getKeyColor());
-                currentLevel.removeItem(item);
-                return new GameEvent("key", item.getCost(), item.getSubtype());
-            }else {
-                boolean picked = player.getBackpack().addItem(item);
-                if (picked)
-                    currentLevel.removeItem(item);
-                return new GameEvent("pickup", item.getCost(), item.getType().name());
-            }
-        }
-
-        if (currentLevel.isExit(newPos)) {  // если "наступили" на выход
-            return goToNextLevel();
-        }
-        return null;
-    }
-
     public GameEvent moveFP(int forward, int strafe) {
         Player p = session.getPlayer();
 
@@ -130,7 +63,7 @@ public class GameEngine {
         }
 
         double speed = 0.20;
-        double angle = p.getAngle();
+        double angle = p.getAngleRadian();    // переводим угол в радианы
 
         // forward vector (0° = вправо)
         double dirX = Math.cos(angle);
@@ -151,23 +84,25 @@ public class GameEngine {
             dy = (dy / len) * speed;
         }
 
-        // wall sliding
-        // сначала пробуем двигаться по X
-        GameEvent eventX = movePlayer(dx, 0);
-        // затем по Y
-        GameEvent eventY = movePlayer(0, dy);
+        GameEvent e = movePlayer(dx, dy, false);
+        if (e.getType().equals("blocked")) {
+            // wall sliding
+            // сначала пробуем двигаться по X
+            e = movePlayer(dx, 0, false);
+            if (e.getType().equals("blocked")) {
+                // затем по Y
+                e = movePlayer(0, dy, false);
+            }
+        }
 
-        if (eventX != null) return eventX;
-        if (eventY != null) return eventY;
-
-        return null;
+        return e;
     }
 
     public void rotatePlayer(double delta) {
         session.getPlayer().rotate(delta);
     }
 
-    public GameEvent movePlayer(double dx, double dy) {
+    public GameEvent movePlayer(double dx, double dy, boolean byCell) {
         Player player = session.getPlayer();
         Level currentLevel = session.getCurrentLevel();
 
@@ -176,7 +111,7 @@ public class GameEngine {
 
         Position newPos = new Position(newX, newY);
 
-        Object obj = currentLevel.getObjectAt(newPos);
+        Object obj = currentLevel.getObjectAt(newPos, byCell);
 
         if (obj instanceof DoorMeta door) {
             Backpack bp = player.getBackpack();
@@ -187,18 +122,22 @@ public class GameEngine {
                 session.pushEvent(new GameEvent("doorOpened", 0, door.getColor().name()));
             } else {
                 session.pushEvent(new GameEvent("doorLocked", 0, door.getColor().name()));
-                return null;
+                return new GameEvent("blocked", 0, "");
             }
         }
 
         if (!currentLevel.isWalkable(newPos)) {
-            return null;//new GameEvent("blocked", newX, newY, 0, "");
+            return new GameEvent("blocked", 0, "");
         }
 
         if (obj instanceof Enemy enemy) {   // если "наступили" на врага
             double hitChance = (double) player.getAgility() / (enemy.getAgility() + player.getAgility());
             boolean isHit = Math.random() <= hitChance;
-            int damage = player.getStrength() + (player.getCurrentWeapon() != null ? player.getCurrentWeapon().getStrength() : 0);
+            // расчет урона с долей случайности
+            int damage = player.getStrength()
+                    + (player.getCurrentWeapon() != null ? player.getCurrentWeapon().getStrength() : 0)
+                    + (int)(Math.random() * 4);
+
             if (isHit) isHit = enemy.takeDamage(damage);
 
             if (!enemy.isAlive()) {
@@ -232,7 +171,9 @@ public class GameEngine {
         if (currentLevel.isExit(newPos)) {  // если "наступили" на выход
             return goToNextLevel();
         }
-        return null;
+
+        //session.getStats().step();
+        return new GameEvent("moved", 0,"");
     }
 
     public void nextTurn() {
@@ -276,7 +217,7 @@ public class GameEngine {
                 // выбросить на пол
                 Position dropPos = level.findFreeAdjacentCell(player.getPosition());
                 if (dropPos != null) {
-                    oldWeapon.setPosition(dropPos.x, dropPos.y);
+                    oldWeapon.setPosition(dropPos);
                     level.addItem(oldWeapon);
                 }
             }
@@ -316,7 +257,7 @@ public class GameEngine {
             amount,
             0
         );
-        gold.setPosition(enemy.getX(), enemy.getY());
+        gold.setPosition(new Position(enemy.getX(), enemy.getY()));
         level.addItem(gold);
     }
 }

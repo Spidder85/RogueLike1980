@@ -3,12 +3,15 @@ package presentation.StartMenu;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
+import settings.GameResult;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 
 public class StartMenu {
     private static final String[] LOGO2 = {
@@ -31,6 +34,31 @@ public class StartMenu {
             "   ░░   ░ ░ ░ ░ ▒  ░ ░   ░  ░░░ ░ ░    ░   ",
             "    ░         ░ ░        ░    ░        ░  ░"
     };
+
+    private static final String[] YOUWIN = {
+            " █     █░ ██▓ ███▄    █  ███▄    █ ▓█████  ██▀███  ",
+            "▓█░ █ ░█░▓██▒ ██ ▀█   █  ██ ▀█   █ ▓█   ▀ ▓██ ▒ ██▒",
+            "▒█░ █ ░█ ▒██▒▓██  ▀█ ██▒▓██  ▀█ ██▒▒███   ▓██ ░▄█ ▒",
+            "░█░ █ ░█ ░██░▓██▒  ▐▌██▒▓██▒  ▐▌██▒▒▓█  ▄ ▒██▀▀█▄  ",
+            "░░██▒██▓ ░██░▒██░   ▓██░▒██░   ▓██░░▒████▒░██▓ ▒██▒",
+            "░ ▓░▒ ▒  ░▓  ░ ▒░   ▒ ▒ ░ ▒░   ▒ ▒ ░░ ▒░ ░░ ▒▓ ░▒▓░",
+            "  ▒ ░ ░   ▒ ░░ ░░   ░ ▒░░ ░░   ░ ▒░ ░ ░  ░  ░▒ ░ ▒░",
+            "  ░   ░   ▒ ░   ░   ░ ░    ░   ░ ░    ░     ░░   ░ ",
+            "    ░     ░           ░          ░    ░  ░   ░     "
+    };
+
+    private static final String[] GAMEOVER = {
+        "  ▄████  ▄▄▄       ███▄ ▄███▓▓█████     ▒█████   ██▒   █▓▓█████  ██▀███  ",
+        " ██▒ ▀█▒▒████▄    ▓██▒▀█▀ ██▒▓█   ▀    ▒██▒  ██▒▓██░   █▒▓█   ▀ ▓██ ▒ ██▒",
+        "▒██░▄▄▄░▒██  ▀█▄  ▓██    ▓██░▒███      ▒██░  ██▒ ▓██  █▒░▒███   ▓██ ░▄█ ▒",
+        "░▓█  ██▓░██▄▄▄▄██ ▒██    ▒██ ▒▓█  ▄    ▒██   ██░  ▒██ █░░▒▓█  ▄ ▒██▀▀█▄  ",
+        "░▒▓███▀▒ ▓█   ▓██▒▒██▒   ░██▒░▒████▒   ░ ████▓▒░   ▒▀█░  ░▒████▒░██▓ ▒██▒",
+        " ░▒   ▒  ▒▒   ▓▒█░░ ▒░   ░  ░░░ ▒░ ░   ░ ▒░▒░▒░    ░ ▐░  ░░ ▒░ ░░ ▒▓ ░▒▓░",
+        "  ░   ░   ▒   ▒▒ ░░  ░      ░ ░ ░  ░     ░ ▒ ▒░    ░ ░░   ░ ░  ░  ░▒ ░ ▒░",
+        "░ ░   ░   ░   ▒   ░      ░      ░      ░ ░ ░ ▒       ░░     ░     ░░   ░ ",
+        "      ░       ░  ░       ░      ░  ░       ░ ░        ░     ░  ░   ░     ",
+        "                                                     ░                    "
+};
 
     private static final List<String> ITEMS = List.of(
             "Новая игра      ",
@@ -123,5 +151,35 @@ public class StartMenu {
             case 3 -> StartMenuAction.EXIT;
             default -> throw new IllegalStateException();
         };
+    }
+
+    public void drawFinalMessage(Screen screen, GameResult result) throws IOException {
+        screen.clear();
+        TextGraphics tg = screen.newTextGraphics();
+        int width = screen.getTerminalSize().getColumns();
+        int height = screen.getTerminalSize().getRows();
+        String[] message;
+        TextColor color;
+        if(result == GameResult.WIN) {
+            message = YOUWIN;
+            color = TextColor.ANSI.GREEN;
+        } else {
+            message = GAMEOVER;
+            color = TextColor.ANSI.RED;
+        }
+        int y = (height - message.length) / 2;
+        for(int i = 0; i < message.length; ++i) {
+            int x = (width - message[i].length()) / 2;
+            drawString(tg, x, y + i, message[i], "█▀▄", color, TextColor.ANSI.WHITE);
+        }
+        String hint = "Нажмите ESC для возврата...";
+        int hintX = (width - hint.length()) / 2;
+        tg.setForegroundColor(TextColor.ANSI.WHITE);
+        tg.putString(hintX, y + message.length + 1, hint);
+        screen.refresh();
+        KeyStroke key;
+        do {
+            key = screen.readInput();
+        } while (key.getKeyType() != KeyType.Escape);
     }
 }

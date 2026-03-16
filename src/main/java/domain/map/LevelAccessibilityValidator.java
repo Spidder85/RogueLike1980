@@ -43,7 +43,7 @@ public class LevelAccessibilityValidator {
                     if ((mask & door.getColor().bit()) == 0) continue;
                 }
 
-                Item item = level.getItemAt(nx, ny);
+                Item item = level.getItemAt(new Position(nx, ny));
                 if (item != null && item.getType() == ItemType.KEY) {
                     mask |= item.getKeyColor().bit();
                 }

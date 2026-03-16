@@ -1,6 +1,7 @@
 package datalayer.mapper;
 
 import datalayer.dto.ItemDTO;
+import domain.common.Position;
 import domain.item.Item;
 import domain.item.ItemType;
 import domain.item.KeyColor;
@@ -44,7 +45,7 @@ public class ItemMapper {
         if (dto.keyColor != null)
             item.setKeyColor(KeyColor.valueOf(dto.keyColor));
 
-        item.setPosition(dto.x, dto.y);
+        item.setPosition(new Position(dto.x, dto.y));
         return item;
     }
 }

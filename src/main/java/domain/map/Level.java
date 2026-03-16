@@ -4,6 +4,7 @@ import domain.item.Item;
 import domain.common.Position;
 import domain.enemy.Enemy;
 import domain.item.ItemType;
+import settings.GameSettings;
 
 import java.util.*;
 
@@ -45,7 +46,8 @@ public class Level {
                 .orElseThrow(() ->
                         new IllegalStateException("Exit room is missing"));
 
-        this.exitPosition = exitRoom.getRandomPoint();
+        Position exit = exitRoom.getRandomPoint();
+        this.exitPosition = new Position(exit.x + 0.5, exit.y + 0.5);
     }
 
     public void setCorridors(List<Corridor> corridors) {
@@ -114,19 +116,30 @@ public class Level {
 
     public List<Item> getItems() { return items; }
 
-    public Enemy getEnemyAt(int x, int y) {
+    public Enemy getEnemyAt(Position p) {
         return enemies.stream()
-                .filter(e -> e.isAlive() && e.getX() == x && e.getY() == y)
+                //.filter(e -> e.isAlive() && e.getX() == x && e.getY() == y)
+                .filter(e -> e.isAlive() && inCollisionBox(e.getPosition(), p))
                 .findFirst()
                 .orElse(null);
     }
 
-    public Item getItemAt(int x, int y) {
+    public Item getItemAt(Position p) {
         return items.stream()
-                .filter(e -> e.getX() == x && e.getY() == y)
+                .filter(e -> inCollisionBox(e.getPosition(), p))
                 .findFirst()
                 .orElse(null);
     }
+
+    private boolean inCollisionBox(Position pObj, Position pCheck) {
+        double colBoxSize = GameSettings.COLLISION_BOX_SIZE;
+
+        return pCheck.dX >= pObj.dX - colBoxSize &&
+               pCheck.dX <= pObj.dX + colBoxSize &&
+               pCheck.dY >= pObj.dY - colBoxSize &&
+               pCheck.dY <= pObj.dY + colBoxSize;
+    }
+
 
     public Position getExitPosition() {
         return exitPosition;
@@ -142,15 +155,15 @@ public class Level {
 
     public boolean isExit(Position p) {
         return exitPosition != null &&
-                exitPosition.x == p.x &&
-                exitPosition.y == p.y;
+                inCollisionBox(exitPosition, p);
     }
 
-    public Object getObjectAt(Position p) {
-        Enemy enemy = getEnemyAt(p.x, p.y);
+    public Object getObjectAt(Position p, boolean byCell) {
+        if (byCell) p = new Position(p.x, p.y);
+        Enemy enemy = getEnemyAt(p);
         if (enemy != null) return enemy;
 
-        Item item = getItemAt(p.x, p.y);
+        Item item = getItemAt(p);
         if (item != null) return item;
 
         DoorMeta door = getDoorAt(p);
@@ -168,7 +181,7 @@ public class Level {
 
         for (int[] d : dirs) {
             Position p = new Position(from.x + d[0], from.y + d[1]);
-            if (isWalkable(p) && getObjectAt(p) == null) {
+            if (isWalkable(p) && getObjectAt(p, true) == null) {
                 return p;
             }
         }
@@ -201,5 +214,24 @@ public class Level {
     public void clearDoorsAndKeys() {
         doors.clear();
         items.removeIf(i -> i.getType() == ItemType.KEY);
+    }
+
+    public Room findNearestRoom(Position p) {
+        Room nearest = null;
+        double bestDistance = Double.MAX_VALUE;
+
+        for (Room r : rooms) {
+            // центр комнаты
+            Position cPos = r.getCenter();
+            double dx = p.dX - cPos.dX;
+            double dy = p.dY - cPos.dY;
+
+            double dist = dx * dx + dy * dy;
+            if (dist < bestDistance) {
+                bestDistance = dist;
+                nearest = r;
+            }
+        }
+        return nearest;
     }
 }

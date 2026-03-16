@@ -2,6 +2,7 @@ package presentation;
 
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
+import domain.item.Item;
 import domain.item.ItemType;
 import domain.game.GameSession;
 import domain.item.KeyColor;
@@ -32,7 +33,7 @@ public class StatsPanel {
         int yy = session.isTopDown()? y : (int)Math.floor(GameSettings.GAME_HEIGHT * GameSettings.MINIMAP_SCALE + 1);
         g.setForegroundColor(new TextColor.RGB(127,127,127));
         g.putString(x, yy++, "=== СТАТИСТИКА ===");
-        g.putString(x, yy++, "Сокровища: " + session.getStats().getTreasure());
+        //g.putString(x, yy++, "Сокровища: " + session.getStats().getTreasure());
         g.putString(x, yy++, "Уровень: " + session.getStats().getMaxLevel());
         g.putString(x, yy++, "Врагов: " + session.getStats().getEnemiesKilled());
         g.putString(x, yy++, "Еда: " + session.getStats().getFoodEaten());
@@ -45,8 +46,8 @@ public class StatsPanel {
         g.putString(x, yy++, "Здоровье: " + session.getPlayer().getHealth() + "/" + session.getPlayer().getMaxHealth());
         g.putString(x, yy++, "Ловкость: " + session.getPlayer().getAgility());
         g.putString(x, yy++, "Сила: " + session.getPlayer().getStrength());
-        g.putString(x, yy++, "Оружие: " + session.getPlayer().getCurrentWeapon());
-        g.putString(x, yy++, "Angle: " + session.getPlayer().getAngle());
+        g.putString(x, yy++, "Оружие: " + Item.toString(session.getPlayer().getCurrentWeapon()));
+        //g.putString(x, yy++, "Angle: " + session.getPlayer().getAngleDegree() + "°");
 
         yy++;
         g.putString(x, yy++, "=== Инвентарь ===");
@@ -64,19 +65,20 @@ public class StatsPanel {
 
         yy++;
         g.putString(x, yy++, "=== Меню ===");
-        g.putString(x, yy++,"Controls:");
+        g.putString(x, yy++,"Управление:");
         if (session.isTopDown()) {
-            g.putString(x, yy++, "W/A/S/D - Move");
+            g.putString(x, yy++, "W/A/S/D - Движение");
         } else {
-            g.putString(x, yy++, "W/A - Forward/Backward");
-            g.putString(x, yy++, "D/S - Turn Left/Right");
-            g.putString(x, yy++, "Z/X - Strafe Left/Right");
+            g.putString(x, yy++, "W/A - Вперед/Назад");
+            g.putString(x, yy++, "D/S - Повернуть налево/направо");
+            g.putString(x, yy++, "Z/X - Шаг в лево/право");
         }
-        g.putString(x, yy++,"H - Use Weapon");
-        g.putString(x, yy++,"J - Use Food");
-        g.putString(x, yy++,"K - Use Elixir");
-        g.putString(x, yy++,"E - Use Scroll");
-        g.putString(x, yy++,"Q - Quit");
+        g.putString(x, yy++,"H - Использовать оружие");
+        g.putString(x, yy++,"J - Использовать еду");
+        g.putString(x, yy++,"K - Использовать эликсир");
+        g.putString(x, yy++,"E - Использовать свиток");
+        g.putString(x, yy++,"F11 - Сменить вид");
+        g.putString(x, yy++,"Q - Выход");
 
 
     }

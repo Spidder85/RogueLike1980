@@ -10,4 +10,11 @@ public class GameStatsDTO {
     public int damageTaken;
     public int steps;
     public int maxLevel;
+    public int levelEnemiesKilled;
+    public int levelFoodEaten;
+    public int levelElixirsDrunk;
+    public int levelScrollsRead;
+    public int levelDamageDealt;
+    public int levelDamageTaken;
+    public int levelSteps;
 }

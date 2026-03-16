@@ -13,6 +13,7 @@ public class Item {
     private final int strength;   // сила (количество единиц повышения, для свитков, эликсиров и оружия),
     private final int cost;   // стоимость (для сокровищ).
 
+    private Position position;
     private int x;
     private int y;
 
@@ -42,12 +43,13 @@ public class Item {
     public int getCost() { return cost; }
     public int getDuration() { return duration; }
 
-    public int getX() { return x; }
-    public int getY() { return y;}
+    public int getX() { return position.x; }
+    public int getY() { return position.y; }
+    public double getDY() { return position.dY; }
+    public double getDX() { return position.dX;}
 
-    public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public void setPosition(Position pos) {
+        this.position = pos;
     }
 
     // использование предмета
@@ -73,9 +75,31 @@ public class Item {
     }
 
     public Position getPosition() {
-        return new Position(x, y);
+        return position;
     }
 
     public KeyColor getKeyColor() { return keyColor; }
     public void setKeyColor(KeyColor keyColor) { this.keyColor = keyColor; }
+
+    @Override
+    public String toString() {
+        return capitalize(type.toString()) +
+                (getMaxHealth() > 0 ? " (+ " + getMaxHealth() + " max HP)" : "") +
+                (getHealth() > 0 ? " (+ " + getHealth() + " HP)" : "") +
+                (getAgility() > 0 ? " (+ " + getAgility() + " Agility)" : "") +
+                (getStrength() > 0 ? " (+ " + getStrength() + " Strength)" : "") +
+                (getDuration() > 0 ? " : " + getDuration() + " Duration" : "");
+    }
+
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return "-";
+        }
+        return  str.substring(0, 1).toUpperCase() +
+                str.substring(1).toLowerCase();
+    }
+
+    public static String toString(Item item) {
+        return item == null ? "----" : item.toString();
+    }
 }

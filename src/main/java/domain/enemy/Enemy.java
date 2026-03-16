@@ -20,10 +20,10 @@ public abstract class Enemy {
 
     protected Enemy(
             EnemyType type,
-            int health,
-            int agility,
-            int strength,
-            int hostility,
+            int health,     // здоровье
+            int agility,    // ловкость
+            int strength,   // сила
+            int hostility,  // враждебность
             Position position
     ) {
         this.type = type;
@@ -74,6 +74,13 @@ public abstract class Enemy {
     }
     public int getY() {
         return position.y;
+    }
+
+    public double getDX() {
+        return position.dX;
+    }
+    public double getDY() {
+        return position.dY;
     }
 
     public void performSpecialAbility(Player player, List<GameEvent> events) {}

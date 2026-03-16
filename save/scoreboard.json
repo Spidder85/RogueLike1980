@@ -1,0 +1,143 @@
+{
+  "sessionStats": [
+    {
+      "treasure": 474,
+      "enemiesKilled": 38,
+      "damageDealt": 898,
+      "damageTaken": 109,
+      "steps": 1475,
+      "maxLevel": 7,
+      "foodPicked": 9,
+      "elixirsPicked": 9,
+      "scrollsPicked": 5
+    },
+    {
+      "treasure": 1025,
+      "enemiesKilled": 82,
+      "damageDealt": 984,
+      "damageTaken": 181,
+      "steps": 2792,
+      "maxLevel": 21,
+      "foodPicked": 13,
+      "elixirsPicked": 26,
+      "scrollsPicked": 11
+    },
+    {
+      "treasure": 1011,
+      "enemiesKilled": 82,
+      "damageDealt": 984,
+      "damageTaken": 187,
+      "steps": 2782,
+      "maxLevel": 21,
+      "foodPicked": 13,
+      "elixirsPicked": 26,
+      "scrollsPicked": 11
+    },
+    {
+      "treasure": 19,
+      "enemiesKilled": 2,
+      "damageDealt": 40,
+      "damageTaken": 104,
+      "steps": 183,
+      "maxLevel": 0,
+      "foodPicked": 0,
+      "elixirsPicked": 1,
+      "scrollsPicked": 0
+    },
+    {
+      "treasure": 0,
+      "enemiesKilled": 0,
+      "damageDealt": 0,
+      "damageTaken": 100,
+      "steps": 41,
+      "maxLevel": 0,
+      "foodPicked": 0,
+      "elixirsPicked": 0,
+      "scrollsPicked": 0
+    },
+    {
+      "treasure": 59,
+      "enemiesKilled": 3,
+      "damageDealt": 168,
+      "damageTaken": 80,
+      "steps": 129,
+      "maxLevel": 0,
+      "foodPicked": 2,
+      "elixirsPicked": 0,
+      "scrollsPicked": 0,
+      "saveDate": "09.03.26 01:22"
+    },
+    {
+      "treasure": 33,
+      "enemiesKilled": 2,
+      "damageDealt": 121,
+      "damageTaken": 80,
+      "steps": 61,
+      "maxLevel": 0,
+      "foodPicked": 0,
+      "elixirsPicked": 0,
+      "scrollsPicked": 0,
+      "saveDate": "09.03.26 02:25"
+    },
+    {
+      "treasure": 79,
+      "enemiesKilled": 4,
+      "damageDealt": 167,
+      "damageTaken": 80,
+      "steps": 131,
+      "maxLevel": 0,
+      "foodPicked": 0,
+      "elixirsPicked": 0,
+      "scrollsPicked": 0,
+      "saveDate": "09.03.26 02:36"
+    },
+    {
+      "treasure": 0,
+      "enemiesKilled": 0,
+      "damageDealt": 0,
+      "damageTaken": 80,
+      "steps": 41,
+      "maxLevel": 1,
+      "foodPicked": 0,
+      "elixirsPicked": 1,
+      "scrollsPicked": 0,
+      "saveDate": "15.03.26 11:09"
+    },
+    {
+      "treasure": 56,
+      "enemiesKilled": 3,
+      "damageDealt": 110,
+      "damageTaken": 96,
+      "steps": 143,
+      "maxLevel": 1,
+      "foodPicked": 1,
+      "elixirsPicked": 0,
+      "scrollsPicked": 0,
+      "saveDate": "15.03.26 17:50"
+    },
+    {
+      "treasure": 30,
+      "enemiesKilled": 2,
+      "damageDealt": 103,
+      "damageTaken": 80,
+      "steps": 191,
+      "maxLevel": 4,
+      "foodPicked": 0,
+      "elixirsPicked": 0,
+      "scrollsPicked": 0,
+      "saveDate": "15.03.26 21:15"
+    },
+    {
+      "treasure": 30,
+      "enemiesKilled": 2,
+      "damageDealt": 113,
+      "damageTaken": 80,
+      "steps": 193,
+      "maxLevel": 4,
+      "foodPicked": 0,
+      "elixirsPicked": 0,
+      "scrollsPicked": 0,
+      "saveDate": "15.03.26 21:17"
+    }
+  ]
+}

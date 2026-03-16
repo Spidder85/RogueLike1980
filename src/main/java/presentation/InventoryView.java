@@ -18,7 +18,8 @@ public class InventoryView {
 
     public Integer chooseItem(Player player, ItemType type) {
         List<Item> items = player.getBackpack().getItems(type);
-        if (items.isEmpty()) return null;
+        boolean isWeapon = type == ItemType.WEAPON && player.getCurrentWeapon() != null;
+        if (items.isEmpty() && !isWeapon) return null;
 
         draw(items, type);
 
@@ -57,10 +58,14 @@ public class InventoryView {
             g.putString(5, y++, "0: Убрать оружие");
         }
         for (Item it : items) {
-            String str = (idx++) + ": " + it.getType() +
-                    (it.getHealth() > 0 ? " (+ " + it.getHealth() + " HP)" : "") +
-                    (it.getAgility() > 0 ? " (+ " + it.getAgility() + " AGI)" : "") +
-                    (it.getStrength() > 0 ? " (+ " + it.getStrength() + " STR)" : "");
+//            String str = (idx++) + ": " + it.getType() +
+//                    (it.getMaxHealth() > 0 ? " (+ " + it.getMaxHealth() + " max HP)" : "") +
+//                    (it.getHealth() > 0 ? " (+ " + it.getHealth() + " HP)" : "") +
+//                    (it.getAgility() > 0 ? " (+ " + it.getAgility() + " Agility)" : "") +
+//                    (it.getStrength() > 0 ? " (+ " + it.getStrength() + " Strength)" : "") +
+//                    (it.getDuration() > 0 ? " : " + it.getDuration() + " Duration" : "");
+            String str = (idx++) + ": " + Item.toString(it);
+            //g.putString(5, y++, str);
             g.putString(5, y++, str);
         }
 

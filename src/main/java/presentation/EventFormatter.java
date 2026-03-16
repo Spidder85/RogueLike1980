@@ -20,13 +20,13 @@ public class EventFormatter {
             case "levelChanged" -> "Найден переход на уровень" + e.getValue();
             case "gameFinished" -> "Игра завершена";
 
-            case "weaponRemoved" -> "Оружие " + e.getItemType() + " убрано";
-            case "weaponEquipped" -> "Оружие " + e.getItemType() + " экипировано'";
+            case "weaponRemoved" -> "Оружие убрано";
+            case "weaponEquipped" -> "Оружие " + e.getItemType() + " экипировано";
             case "usedItem" -> "Использован предмет " + e.getItemType();
             case "vampireDrain" -> "Вампир поглощает " + e.getValue() + " здоровья";
             case "snakeMagePutToSleep" -> "Змей маг усыпил игрока";
 
-            case "doorOpened" -> "Дверь " + e.getItemType() + " открыта";
+           case "doorOpened" -> "Дверь " + e.getItemType() + " открыта";
             case "doorLocked" -> "Дверь " + e.getItemType() + " закрыта";
             case "key" -> "Ключ " + e.getItemType() + " найден";
 

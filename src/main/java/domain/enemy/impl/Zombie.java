@@ -17,10 +17,10 @@ public class Zombie extends Enemy {
     public Zombie(Position position) {
         super(
                 EnemyType.ZOMBIE,
-                30,
-                5,
-                10,
-                5,
+                55,
+                4,
+                8,
+                6,
                 position
         );
     }
@@ -29,9 +29,11 @@ public class Zombie extends Enemy {
     public EnemyIntent decideIntent(EnemyContext context) {
         Position ePos = context.getEnemyPosition();
         Position pPos = context.getPlayerPosition();
-        int dx = Math.abs(ePos.x - pPos.x);
-        int dy = Math.abs(ePos.y - pPos.y);
-        if ( dx + dy == 1 ) {
+        double dx = Math.abs(ePos.dX - pPos.dX);
+        double dy = Math.abs(ePos.dY - pPos.dY);
+        double distance = Math.sqrt(dx * dx + dy * dy);
+
+        if ( distance <= context.getAttackRange() ) {
             return new EnemyIntent.Attack();
         }
 
@@ -57,8 +59,13 @@ public class Zombie extends Enemy {
         if (dx < 0 && dy == 0) return Direction.LEFT;
         if (dx > 0 && dy == 0) return Direction.RIGHT;
 
-        // диагональ — зомби не умеет, fallback
-        return randomDirection();
+        if (Math.random() < 0.5) {  // Случайный выбор между горизонталью и вертикалью
+            // Идем по горизонтали
+            return dx < 0 ? Direction.LEFT : Direction.RIGHT;
+        } else {
+            // Идем по вертикали
+            return dy < 0 ? Direction.UP : Direction.DOWN;
+        }
     }
     @Override
     public void update() {}

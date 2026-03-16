@@ -1,45 +1,32 @@
 {
   "player": {
-    "maxHealth": 94,
-    "health": 78,
-    "agility": 20,
-    "strength": 20,
-    "x": 27,
-    "y": 17,
+    "maxHealth": 80,
+    "health": 80,
+    "agility": 12,
+    "strength": 10,
+    "x": 62,
+    "y": 9,
     "backpack": {
       "items": {
-        "ELIXIR": [
-          {
-            "type": "ELIXIR",
-            "subtype": "elixir",
-            "health": 0,
-            "maxHealth": 2,
-            "agility": 1,
-            "strength": 1,
-            "cost": 0,
-            "duration": 3,
-            "x": 68,
-            "y": 33
-          }
-        ],
+        "ELIXIR": [],
         "SCROLL": [],
-        "WEAPON": [],
-        "FOOD": [
+        "WEAPON": [
           {
-            "type": "FOOD",
-            "subtype": "food",
-            "health": 6,
+            "type": "WEAPON",
+            "subtype": "weapon",
+            "health": 0,
             "maxHealth": 0,
             "agility": 0,
-            "strength": 0,
+            "strength": 5,
             "cost": 0,
             "duration": 0,
-            "x": 70,
-            "y": 9
+            "x": 12,
+            "y": 19
           }
-        ]
+        ],
+        "FOOD": []
       },
-      "treasureAmount": 25,
+      "treasureAmount": 0,
       "keyMask": 0
     }
   },
@@ -51,191 +38,260 @@
     "scrollsRead": 0,
     "damageDealt": 0,
     "damageTaken": 0,
-    "steps": 0,
-    "maxLevel": 2
+    "steps": 55,
+    "maxLevel": 2,
+    "levelEnemiesKilled": 0,
+    "levelFoodEaten": 0,
+    "levelElixirsDrunk": 0,
+    "levelScrollsRead": 0,
+    "levelDamageDealt": 0,
+    "levelDamageTaken": 0,
+    "levelSteps": 0
   },
   "level": {
     "levelIndex": 2,
     "enemies": [
       {
-        "type": "ZOMBIE",
-        "x": 49,
-        "y": 30,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 5,
-        "strength": 10,
-        "hostility": 5
-      },
-      {
-        "type": "VAMPIRE",
-        "x": 53,
-        "y": 30,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 9,
-        "strength": 6,
-        "hostility": 8
-      },
-      {
-        "type": "VAMPIRE",
-        "x": 63,
-        "y": 15,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 9,
-        "strength": 6,
-        "hostility": 8
-      },
-      {
-        "type": "VAMPIRE",
-        "x": 60,
-        "y": 17,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 9,
-        "strength": 6,
-        "hostility": 8
-      },
-      {
-        "type": "ZOMBIE",
-        "x": 20,
-        "y": 2,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 5,
-        "strength": 10,
-        "hostility": 5
-      },
-      {
-        "type": "ZOMBIE",
-        "x": 39,
-        "y": 6,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 5,
-        "strength": 10,
-        "hostility": 5
-      },
-      {
         "type": "GHOST",
-        "x": 36,
-        "y": 6,
-        "health": 15,
-        "maxHealth": 15,
-        "agility": 7,
-        "strength": 3,
+        "x": 10,
+        "y": 30,
+        "health": 18,
+        "maxHealth": 18,
+        "agility": 12,
+        "strength": 4,
         "hostility": 3
       },
       {
-        "type": "GHOST",
-        "x": 71,
-        "y": 2,
-        "health": 15,
-        "maxHealth": 15,
-        "agility": 7,
-        "strength": 3,
-        "hostility": 3
-      },
-      {
-        "type": "GHOST",
+        "type": "OGRE",
         "x": 5,
-        "y": 11,
-        "health": 15,
-        "maxHealth": 15,
-        "agility": 7,
-        "strength": 3,
+        "y": 27,
+        "health": 90,
+        "maxHealth": 90,
+        "agility": 2,
+        "strength": 18,
+        "hostility": 5
+      },
+      {
+        "type": "OGRE",
+        "x": 8,
+        "y": 29,
+        "health": 90,
+        "maxHealth": 90,
+        "agility": 2,
+        "strength": 18,
+        "hostility": 5
+      },
+      {
+        "type": "GHOST",
+        "x": 51,
+        "y": 16,
+        "health": 18,
+        "maxHealth": 18,
+        "agility": 12,
+        "strength": 4,
         "hostility": 3
       },
       {
+        "type": "ZOMBIE",
+        "x": 48,
+        "y": 16,
+        "health": 55,
+        "maxHealth": 55,
+        "agility": 4,
+        "strength": 8,
+        "hostility": 6
+      },
+      {
+        "type": "OGRE",
+        "x": 50,
+        "y": 14,
+        "health": 90,
+        "maxHealth": 90,
+        "agility": 2,
+        "strength": 18,
+        "hostility": 5
+      },
+      {
+        "type": "OGRE",
+        "x": 69,
+        "y": 33,
+        "health": 90,
+        "maxHealth": 90,
+        "agility": 2,
+        "strength": 18,
+        "hostility": 5
+      },
+      {
         "type": "VAMPIRE",
-        "x": 3,
-        "y": 12,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 9,
-        "strength": 6,
+        "x": 68,
+        "y": 32,
+        "health": 45,
+        "maxHealth": 45,
+        "agility": 10,
+        "strength": 8,
         "hostility": 8
       },
       {
-        "type": "ZOMBIE",
-        "x": 66,
-        "y": 31,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 5,
-        "strength": 10,
-        "hostility": 5
-      },
-      {
-        "type": "ZOMBIE",
-        "x": 67,
-        "y": 32,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 5,
-        "strength": 10,
-        "hostility": 5
-      },
-      {
-        "type": "ZOMBIE",
-        "x": 11,
+        "type": "GHOST",
+        "x": 70,
         "y": 34,
-        "health": 30,
-        "maxHealth": 30,
-        "agility": 5,
-        "strength": 10,
+        "health": 18,
+        "maxHealth": 18,
+        "agility": 12,
+        "strength": 4,
+        "hostility": 3
+      },
+      {
+        "type": "OGRE",
+        "x": 6,
+        "y": 18,
+        "health": 90,
+        "maxHealth": 90,
+        "agility": 2,
+        "strength": 18,
+        "hostility": 5
+      },
+      {
+        "type": "VAMPIRE",
+        "x": 7,
+        "y": 20,
+        "health": 45,
+        "maxHealth": 45,
+        "agility": 10,
+        "strength": 8,
+        "hostility": 8
+      },
+      {
+        "type": "GHOST",
+        "x": 2,
+        "y": 19,
+        "health": 18,
+        "maxHealth": 18,
+        "agility": 12,
+        "strength": 4,
+        "hostility": 3
+      },
+      {
+        "type": "GHOST",
+        "x": 51,
+        "y": 30,
+        "health": 18,
+        "maxHealth": 18,
+        "agility": 12,
+        "strength": 4,
+        "hostility": 3
+      },
+      {
+        "type": "GHOST",
+        "x": 51,
+        "y": 31,
+        "health": 18,
+        "maxHealth": 18,
+        "agility": 12,
+        "strength": 4,
+        "hostility": 3
+      },
+      {
+        "type": "GHOST",
+        "x": 53,
+        "y": 32,
+        "health": 18,
+        "maxHealth": 18,
+        "agility": 12,
+        "strength": 4,
+        "hostility": 3
+      },
+      {
+        "type": "OGRE",
+        "x": 15,
+        "y": 2,
+        "health": 90,
+        "maxHealth": 90,
+        "agility": 2,
+        "strength": 18,
+        "hostility": 5
+      },
+      {
+        "type": "OGRE",
+        "x": 23,
+        "y": 7,
+        "health": 90,
+        "maxHealth": 90,
+        "agility": 2,
+        "strength": 18,
+        "hostility": 5
+      },
+      {
+        "type": "OGRE",
+        "x": 21,
+        "y": 20,
+        "health": 90,
+        "maxHealth": 90,
+        "agility": 2,
+        "strength": 18,
         "hostility": 5
       }
     ],
     "items": [
       {
-        "type": "FOOD",
-        "subtype": "food",
-        "health": 7,
-        "maxHealth": 0,
+        "type": "ELIXIR",
+        "subtype": "maxHealth",
+        "health": 0,
+        "maxHealth": 10,
         "agility": 0,
         "strength": 0,
         "cost": 0,
-        "duration": 0,
-        "x": 50,
-        "y": 30
+        "duration": 4,
+        "x": 3,
+        "y": 27
       },
       {
         "type": "ELIXIR",
-        "subtype": "elixir",
+        "subtype": "strength",
         "health": 0,
-        "maxHealth": 2,
-        "agility": 1,
-        "strength": 1,
+        "maxHealth": 0,
+        "agility": 0,
+        "strength": 3,
         "cost": 0,
-        "duration": 3,
-        "x": 57,
+        "duration": 4,
+        "x": 44,
+        "y": 16
+      },
+      {
+        "type": "FOOD",
+        "subtype": "food",
+        "health": 15,
+        "maxHealth": 0,
+        "agility": 0,
+        "strength": 0,
+        "cost": 0,
+        "duration": 0,
+        "x": 69,
+        "y": 32
+      },
+      {
+        "type": "ELIXIR",
+        "subtype": "agility",
+        "health": 0,
+        "maxHealth": 0,
+        "agility": 2,
+        "strength": 0,
+        "cost": 0,
+        "duration": 4,
+        "x": 3,
         "y": 17
       },
       {
-        "type": "FOOD",
-        "subtype": "food",
-        "health": 7,
+        "type": "ELIXIR",
+        "subtype": "strength",
+        "health": 0,
         "maxHealth": 0,
         "agility": 0,
-        "strength": 0,
+        "strength": 2,
         "cost": 0,
-        "duration": 0,
-        "x": 24,
-        "y": 6
-      },
-      {
-        "type": "FOOD",
-        "subtype": "food",
-        "health": 7,
-        "maxHealth": 0,
-        "agility": 0,
-        "strength": 0,
-        "cost": 0,
-        "duration": 0,
-        "x": 33,
-        "y": 7
+        "duration": 4,
+        "x": 54,
+        "y": 33
       },
       {
         "type": "WEAPON",
@@ -243,91 +299,83 @@
         "health": 0,
         "maxHealth": 0,
         "agility": 0,
-        "strength": 5,
+        "strength": 6,
         "cost": 0,
         "duration": 0,
-        "x": 68,
-        "y": 2
-      },
-      {
-        "type": "FOOD",
-        "subtype": "food",
-        "health": 7,
-        "maxHealth": 0,
-        "agility": 0,
-        "strength": 0,
-        "cost": 0,
-        "duration": 0,
-        "x": 2,
-        "y": 9
-      },
-      {
-        "type": "FOOD",
-        "subtype": "food",
-        "health": 7,
-        "maxHealth": 0,
-        "agility": 0,
-        "strength": 0,
-        "cost": 0,
-        "duration": 0,
-        "x": 64,
-        "y": 33
+        "x": 6,
+        "y": 4
       },
       {
         "type": "ELIXIR",
-        "subtype": "elixir",
+        "subtype": "agility",
         "health": 0,
-        "maxHealth": 2,
-        "agility": 1,
-        "strength": 1,
+        "maxHealth": 0,
+        "agility": 2,
+        "strength": 0,
         "cost": 0,
-        "duration": 3,
-        "x": 9,
-        "y": 32
+        "duration": 4,
+        "x": 28,
+        "y": 5
+      },
+      {
+        "type": "WEAPON",
+        "subtype": "weapon",
+        "health": 0,
+        "maxHealth": 0,
+        "agility": 0,
+        "strength": 6,
+        "cost": 0,
+        "duration": 0,
+        "x": 18,
+        "y": 23
       },
       {
         "type": "KEY",
-        "subtype": "red",
+        "subtype": "purple",
         "health": 0,
         "maxHealth": 0,
         "agility": 0,
         "strength": 0,
         "cost": 0,
         "duration": 0,
-        "x": 7,
+        "x": 53,
+        "y": 30,
+        "keyColor": "PURPLE"
+      },
+      {
+        "type": "KEY",
+        "subtype": "green",
+        "health": 0,
+        "maxHealth": 0,
+        "agility": 0,
+        "strength": 0,
+        "cost": 0,
+        "duration": 0,
+        "x": 62,
         "y": 9,
-        "keyColor": "RED"
-      },
-      {
-        "type": "KEY",
-        "subtype": "yellow",
-        "health": 0,
-        "maxHealth": 0,
-        "agility": 0,
-        "strength": 0,
-        "cost": 0,
-        "duration": 0,
-        "x": 65,
-        "y": 31,
-        "keyColor": "YELLOW"
+        "keyColor": "GREEN"
       }
     ],
     "exitPosition": {
-      "x": 48,
-      "y": 30
+      "x": 6,
+      "y": 28,
+      "dX": 6.5,
+      "dY": 28.5
     },
     "doors": [
       {
-        "x": 11,
-        "y": 31,
-        "color": "RED"
+        "x": 66,
+        "y": 34,
+        "color": "PURPLE"
       },
       {
-        "x": 67,
-        "y": 5,
-        "color": "YELLOW"
+        "x": 8,
+        "y": 19,
+        "color": "GREEN"
       }
     ]
   },
-  "worldSeed": 1771099706067
+  "worldSeed": 1773562182857,
+  "viewMode": "TOP_DOWN",
+  "nextLevelBalanceMode": "HARDER"
 }

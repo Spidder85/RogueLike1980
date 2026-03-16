@@ -225,24 +225,30 @@ public class Player {
         health = Math.min(health, maxHealth);
     }
 
-    public double getAngle() {
+    public double getAngleDegree() {
         return angle;
+    }
+
+    public double getAngleRadian() {
+        return Math.toRadians(angle);
     }
     public void setAngle(double angle) {
         this.angle = angle;
     }
     public void rotate(double delta) {
         angle += delta;
-        double twoPi = Math.PI * 2;
+
+        //double radian = Math.toRadians(angle);
+        //double twoPi = Math.PI * 2;
         double epsilon = 1e-12;
 
         if (angle < 0) {
             if (Math.abs(angle) < epsilon) angle = 0;
-            else angle += twoPi;
+            else angle += 360;
         }
-        if (angle > twoPi) {
-            if (Math.abs(angle - twoPi) < epsilon) angle = 0;
-            else angle -= twoPi;
+        if (angle > 360) {
+            if (Math.abs(angle - 360) < epsilon) angle = 0;
+            else angle -= 360;
         }
     }
 

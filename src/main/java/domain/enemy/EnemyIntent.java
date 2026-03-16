@@ -10,7 +10,7 @@ public sealed interface EnemyIntent
         EnemyIntent.Idle {
 
     record Move(Direction direction) implements EnemyIntent {}
-    record Teleport(Position target) implements EnemyIntent {}
+    record Teleport() implements EnemyIntent {}
     record Attack() implements EnemyIntent {}
     record Idle() implements EnemyIntent {}
 }

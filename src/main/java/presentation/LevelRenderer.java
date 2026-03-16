@@ -3,18 +3,24 @@ package presentation;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
+import domain.enemy.impl.Ghost;
+import domain.enemy.impl.Mimic;
 import domain.item.Item;
 import domain.character.Player;
 import domain.common.Position;
 import domain.enemy.Enemy;
 import domain.game.GameSession;
+import domain.item.ItemType;
 import domain.map.Corridor;
 import domain.map.DoorMeta;
 import domain.map.Level;
 import domain.map.Room;
 
+import presentation.Sprite.AsciiSprite;
+import presentation.Sprite.SpriteEditor;
 import settings.GameSettings;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -26,9 +32,24 @@ public class LevelRenderer {
     public final FogOfWar fog;
     private final StatsPanel stats;
 
+    private final AsciiSprite zombieSprite = new AsciiSprite("assets/zombie.spr");
+    private final AsciiSprite vampireSprite = new AsciiSprite("assets/vampire.spr");
+    private final AsciiSprite ghostSprite = new AsciiSprite("assets/ghost.spr");
+    private final AsciiSprite ogreSprite = new AsciiSprite("assets/ogre.spr");
+    private final AsciiSprite snakeMageSprite = new AsciiSprite("assets/snakemage.spr");
+    private final AsciiSprite mimicSprite = new AsciiSprite("assets/mimic.spr");
+    private final AsciiSprite goldSprite = new AsciiSprite("assets/gold.spr");
+    private final AsciiSprite foodSprite = new AsciiSprite("assets/food.spr");
+    private final AsciiSprite elixirSprite = new AsciiSprite("assets/elixir.spr");
+    private final AsciiSprite scrollSprite = new AsciiSprite("assets/scroll.spr");
+    private final AsciiSprite weaponSprite = new AsciiSprite("assets/weapon.spr");
+    private final AsciiSprite keySprite = new AsciiSprite("assets/key.spr");
+    private final AsciiSprite exitSprite = new AsciiSprite("assets/exit.spr");
+
+
     //private final boolean iconMode = GameSettings.ICON_MODE;
 
-    public LevelRenderer(Screen screen) {
+    public LevelRenderer(Screen screen) throws IOException {
         this.screen = screen;
         this.g = screen.newTextGraphics();
         this.fog = new FogOfWar(
@@ -51,8 +72,6 @@ public class LevelRenderer {
     }
 
     public void renderTopDown(Level level, GameSession session, Position offset, double scale) {
-        //screen.clear();
-
         Player player = session.getPlayer();
         fog.computeVisibility(player, GameSettings.FOG_RADIUS, level);
 
@@ -74,10 +93,10 @@ public class LevelRenderer {
     }
 
     private String getArrowSymbol(Player player) {
-        double angle = player.getAngle();
+        double angle = player.getAngleRadian();
         int index = (int) Math.round(angle / (Math.PI / 4)) % 8;
         String symbols = "▶◢▼◣◀◤▲◥"; // ⇒⇘⇓⇙⇐⇖⇑⇗
-        String symbols1 = "⇒⇘⇓⇙⇐⇖⇑⇗";
+        //String symbols1 = "⇒⇘⇓⇙⇐⇖⇑⇗";
         return symbols.substring(index, index + 1);
     }
 
@@ -98,33 +117,34 @@ public class LevelRenderer {
     }
 
     private void drawRoom(Room room, Player player, Level level, Position offset, double scale) {
+        // пол
+        if (room.isValid(player.getPosition())) {    // игрок в комнате
+            g.setForegroundColor(TextColor.ANSI.WHITE);
+            for (int y = room.y + 1; y < room.y + room.height - 1; y++) {
+                for (int x = room.x + 1; x < room.x + room.width - 1; x++) {
+                    putScaled(new Position(x, y), "∙", offset, scale);
+                    //g.putString(x, y, "∙");
+                }
+            }
+        }
+
         // стены
         g.setForegroundColor(TextColor.ANSI.YELLOW);
         for (Position p : room.walls) {
             if (!fog.wasVisited(p.x, p.y)) continue;
 
-            if (p.x == room.x && p.y == room.y)
-                putScaled(p, "╔", offset, scale);
-                //g.putString(p.x, p.y, "╔");
-            else if (p.x == room.x && p.y == room.y + room.height - 1)
-                putScaled(p, "╚", offset, scale);
-                //g.putString(p.x, p.y, "╚");
-            else if (p.x == room.x + room.width - 1 && p.y == room.y)
-                putScaled(p, "╗", offset, scale);
-                //g.putString(p.x, p.y, "╗");
-            else if (p.x == room.x + room.width - 1 && p.y == room.y + room.height - 1)
-                putScaled(p, "╝", offset, scale);
-                //g.putString(p.x, p.y, "╝");
-            else if (p.x == room.x || p.x == room.x + room.width - 1)
+            if (p.x == room.x || p.x == room.x + room.width - 1)
                 putScaled(p, "║", offset, scale);
-                //g.putString(p.x, p.y, "║");
             else if (p.y == room.y || p.y == room.y + room.height - 1)
                 putScaled(p, "═", offset, scale);
-                //g.putString(p.x, p.y, "═");
-            else
-                putScaled(p, "#", offset, scale);
-                //g.putString(p.x, p.y, "#");
         }
+        int x1 = room.x, x2 = room.x + room.width - 1;
+        int y1 = room.y, y2 = room.y + room.height - 1;
+
+        if (fog.wasVisited(x1, y1)) putScaled(new Position(x1,y1), "╔", offset, scale);
+        if (fog.wasVisited(x2, y1)) putScaled(new Position(x2,y1), "╗", offset, scale);
+        if (fog.wasVisited(x1, y2)) putScaled(new Position(x1,y2), "╚", offset, scale);
+        if (fog.wasVisited(x2, y2)) putScaled(new Position(x2,y2), "╝", offset, scale);
 
         // двери
         for (Position p : room.doors) {
@@ -133,23 +153,13 @@ public class LevelRenderer {
             DoorMeta door = level.getDoorAt(p);
             if (door == null) {
                 putScaled(p, "╬", offset, scale);
-                //g.putString(p.x, p.y, "╬");
             } else {
                 g.setForegroundColor(door.getColor().toColor());
                 putScaled(p, "▣", offset, scale);
-                //g.putString(p.x, p.y, "▣"); // ▓
             }
         }
 
-        // пол
-        if (!room.isValid(player.getPosition())) return;    // игрок не в комнате
-        g.setForegroundColor(TextColor.ANSI.WHITE);
-        for (int y = room.y + 1; y < room.y + room.height - 1; y++) {
-            for (int x = room.x + 1; x < room.x + room.width - 1; x++) {
-                putScaled(new Position(x, y), "∙", offset, scale);
-                //g.putString(x, y, "∙");
-            }
-        }
+
     }
 
     private void drawCorridors(Level level, Position offset, double scale) {
@@ -159,8 +169,7 @@ public class LevelRenderer {
             for (Position p : corridor.getPath()) {
                 if (!fog.wasVisited(p.x, p.y)) continue;
 
-                putScaled(p, "▒", offset, scale);
-                //g.putString(p.x, p.y, "▒"); // ░ ▒ ▓
+                putScaled(p, "▒", offset, scale);   // ░ ▒ ▓
             }
         }
     }
@@ -168,18 +177,19 @@ public class LevelRenderer {
     private void drawEnemies(Level level, Player player, Position offset, double scale) {
         Position pp = player.getPosition();
 
-        Room playerRoom = level.findRoom(player.getPosition());
-
         for (Enemy enemy : level.getEnemies()) {
             Position p = enemy.getPosition();
 
             if (!fog.wasVisited(p.x, p.y) ) continue;
 
             if (!isVisible(p, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
-
+            if (enemy instanceof Ghost ghost && ghost.isInvisible()) continue;
+            if (enemy instanceof Mimic mimic && mimic.isDisguised()) {
+                drawItem(mimic.getDisguiseItem(), p, offset, scale);
+                continue;
+            }
             g.setForegroundColor(colorByEnemy(enemy));
             putScaled(p, charByEnemy(enemy), offset, scale);
-            //g.putString(p.x, p.y, charByEnemy(enemy));
         }
     }
 
@@ -192,10 +202,14 @@ public class LevelRenderer {
 
             if (!isVisible(p, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
 
-            g.setForegroundColor(colorByItem(item));
-            putScaled(p, charByItem(item), offset, scale);
-            //g.putString(p.x, p.y, charByItem(item));
+            drawItem(item, p, offset, scale);
         }
+    }
+
+    private void drawItem(Item item, Position p, Position offset, double scale) {
+        g.setForegroundColor(colorByItem(item));
+        putScaled(p, charByItem(item), offset, scale);
+
     }
 
     private boolean isVisible(Position p, Player player, Level level) {
@@ -213,8 +227,7 @@ public class LevelRenderer {
         if (!fog.wasVisited(p.x, p.y)) return;
 
         g.setForegroundColor(TextColor.ANSI.MAGENTA);
-        putScaled(p, ">", offset, scale);
-        //g.putString(p.x, p.y, ">"); // 🚪
+        putScaled(p, ">", offset, scale);   // "⌂" / "▛" / "▲" / "≋"
     }
 
     private void drawPlayer(Player player, Position offset, double scale, String s) {
@@ -271,35 +284,36 @@ public class LevelRenderer {
     }
 
     private void renderFirstPerson(Level level, GameSession session) {
-        //screen.clear();
-
         Player player = session.getPlayer();
         fog.computeVisibility(player, GameSettings.FOG_RADIUS, level);
 
         renderFPField(level, player);
+        renderFPExit(level, player);
+        renderFPItems(level, player);
+        renderFPEnemies(level, player);
+
         int x = screen.getTerminalSize().getColumns() - (int)Math.floor(GameSettings.MINIMAP_SCALE*GameSettings.GAME_WIDTH)-1;
         renderTopDown(level,session, new Position(x, 1), GameSettings.MINIMAP_SCALE);
-        //renderMiniMap(level, player);
-        stats.renderStatusLog(session.getStatusLog());
 
+        stats.renderStatusLog(session.getStatusLog());
         stats.render(session);
     }
 
     private void renderFPField(Level level, Player p) {
-        int screenW = screen.getTerminalSize().getColumns();    // GameSettings.GAME_WIDTH + GameSettings.STATS_PANEL_WIDTH
-        int screenH = screen.getTerminalSize().getRows();       // GameSettings.GAME_HEIGHT + GameSettings.STATUS_LOG_SIZE + 6
-
         int viewW = GameSettings.GAME_WIDTH;
         int viewH = GameSettings.GAME_HEIGHT;
 
         double posX = p.getPosX();
         double posY = p.getPosY();
-        double angle = p.getAngle();
+        double angle = p.getAngleRadian();
 
-        double depth = GameSettings.FOG_RADIUS;
+        int depth = GameSettings.FOG_RADIUS;
         double fov = GameSettings.FP_FOV;
 
         String floorTex = " .:!/r(l1Z4H9W8$@";  // текстура пола от самого темного к самому яркому
+
+        int depthCeiling = (int) (viewH / 2.0 - (double) viewH / depth);
+        int depthFloor = viewH - depthCeiling;
 
         for (int x = 0; x < viewW; x++) {
             double rayAngle = (angle - fov / 2.0) + ((double) x / viewW) * fov;
@@ -307,9 +321,10 @@ public class LevelRenderer {
             double eyeY = Math.sin(rayAngle);
             double eyeX = Math.cos(rayAngle);
 
-            double distanceToWall = 0;
-            boolean hitWall = false;
-            boolean boundary = false;
+            double distanceToWall = 0.0;
+            boolean hitWall = false;    // Устанавливается, когда луч попадает в блок стены
+            boolean boundary = false;   // Устанавливается, когда луч попадает в границу между двумя блоками стены
+            DoorMeta door = null;
 
             while (!hitWall && distanceToWall < depth) {
                 distanceToWall += GameSettings.FP_STEP;
@@ -317,44 +332,56 @@ public class LevelRenderer {
                 int testX = (int) (posX + eyeX * distanceToWall);
                 int testY = (int) (posY + eyeY * distanceToWall);
 
-                //if (!level.isInside(testX, testY)) {
+                Position testPos = new Position(testX, testY);
+
                 if (testX < 0 || testX >= viewW || testY < 0 || testY >= viewH) {
                     hitWall = true;
                     distanceToWall = depth;
-                } else if (!level.isWalkable(new Position(testX, testY))) {
+                } else if (!level.isWalkable(testPos)) {
                     hitWall = true;
                     boundary = isBoundary(level, posX, posY, eyeX, eyeY, testX, testY);
+                    door = level.getDoorAt(testPos);
                 }
             }
+
             // коррекция рыбьего глаза (fish-eye)
             double correctedDist = distanceToWall * Math.cos(rayAngle - angle);
+            if (correctedDist <= 0.0001) correctedDist = 0.0001;
+
+            for (int y = 0; y < viewH; y++) {
+                depthBuffer[y][x] = correctedDist;
+            }
 
             int ceiling = (int) (viewH / 2.0 - viewH / correctedDist);
             int floor = viewH - ceiling;
 
             char wallShade = getWallShade(correctedDist, depth, boundary);
+            TextColor wallColor = TextColor.ANSI.WHITE;
+
+            if (door != null) {
+                wallColor = door.getColor().toColor();
+            }
 
             for (int y = 0; y < viewH; y++) {
                 if (y <= ceiling) {
-                    //draw(x, y, ' ');
-                } else if (y <= floor) {
-                    draw(x, y, wallShade);
-                } else {
-                    double b = 1.0 - ((double) y - viewH / 2.0) / (viewH / 2.0);
-                    int idx = (int) ((floorTex.length() - 1) * (b - 1) * -1);
+                    // пустота / потолок - не рисуем
+                } else if (y <= floor) {    // если стена
+                    draw(x, y, wallShade, wallColor);
+                } else {    // если пол
+                    double t = (double) (y - depthFloor) / (viewH - 1 - depthFloor);
+                    int idx = (int) (t * (floorTex.length() -1));
+                    idx = Math.max(0, Math.min(idx, floorTex.length() -1));
 
-                    idx = Math.max(0, Math.min(idx, floorTex.length() - 1));
-
-                    draw(x, y, floorTex.charAt(idx));
+                    draw(x, y, floorTex.charAt(idx), TextColor.ANSI.WHITE);
                 }
             }
         }
     }
 
     private boolean isBoundary(Level level,
-                            double posX, double posY,
-                            double eyeX, double eyeY,
-                            int testX, int testY) {
+                               double posX, double posY,
+                               double eyeX, double eyeY,
+                               int testX, int testY) {
         List<double[]> corner = new ArrayList<>();
         for (int tx = 0; tx < 2; tx++) {
             for (int ty = 0; ty < 2; ty++) {
@@ -372,7 +399,7 @@ public class LevelRenderer {
         double bound = 0.005;
 
         return Math.acos(corner.get(0)[1]) < bound
-            || Math.acos(corner.get(1)[1]) < bound;
+                || Math.acos(corner.get(1)[1]) < bound;
     }
 
     private char getWallShade(double dist, double depth, boolean boundary) {
@@ -385,15 +412,156 @@ public class LevelRenderer {
         return ' ';
     }
 
-    private void draw(int x, int y, char c) {
+    private void draw(int x, int y, char c, TextColor color) {
+        g.setForegroundColor(color);
         g.setCharacter(x, y, c);//new TextCharacter(c));
     }
 
-//    private void renderMiniMap(Level level, Player player) {
-//        double scale = GameSettings.MINIMAP_SCALE;
-//        int offsetX = 1;
-//        int offsetY = 1;
-//
-//        renderTopDown(level, player, scale, offsetX, offsetY)
-//    }
+    private void renderFPItems(Level level, Player player) {
+        for (Item item : level.getItems()) {
+            Position ip = item.getPosition();
+
+            // скрыто туманом
+            if (!fog.wasVisited(ip.x, ip.y)) continue;
+            if (!isVisible(ip, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
+
+            AsciiSprite sprite = spriteByItem(item);
+            TextColor color =
+                    item.getType() == ItemType.KEY
+                            ? item.getKeyColor().toColor()
+                            : null;
+            renderObjectSprite(player, ip, sprite, 0.4, color, true);
+        }
+    }
+
+    private void renderFPEnemies(Level level, Player player) {
+        for (Enemy enemy : level.getEnemies()) {
+            Position ep = enemy.getPosition();
+
+            if (!fog.isVisible(ep.x, ep.y)) continue;
+            if (!isVisible(ep, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
+            if (enemy instanceof Ghost ghost && ghost.isInvisible()) continue;
+
+            if (enemy instanceof Mimic mimic && mimic.isDisguised()) {
+                Item item = mimic.getDisguiseItem();
+                AsciiSprite sprite = spriteByItem(item);
+                TextColor color =
+                        item.getType() == ItemType.KEY
+                                ? item.getKeyColor().toColor()
+                                : null;
+                renderObjectSprite(player, ep, sprite, 0.5, color, false);
+                continue;
+            }
+            AsciiSprite sprite = spriteByEnemy(enemy);
+            boolean isCenter = enemy instanceof Ghost;
+            renderObjectSprite(player, ep, sprite,0.8, null, isCenter);
+        }
+    }
+
+    private void renderObjectSprite(Player player, Position objPos, AsciiSprite sprite, double scale, TextColor color, boolean isCenter) {
+        Position pp = player.getPosition();
+
+        int viewW = GameSettings.GAME_WIDTH;
+        int viewH = GameSettings.GAME_HEIGHT;
+
+        int depth = GameSettings.FOG_RADIUS;
+        double fov = GameSettings.FP_FOV;
+
+        double dx = objPos.dX - pp.dX;
+        double dy = objPos.dY - pp.dY;
+
+        double distance = Math.sqrt(dx*dx + dy*dy);
+
+        double angle  = player.getAngleRadian();
+
+        double objAngle = Math.atan2(dy, dx) - angle;
+
+        while (objAngle < -Math.PI) objAngle += 2 * Math.PI;
+        while (objAngle >  Math.PI) objAngle -= 2 * Math.PI;
+
+        if (Math.abs(objAngle) > fov / 2.0
+                || distance < 0.2 || distance >= depth)
+            return;
+
+        double correctedDist = distance * Math.cos(objAngle);
+
+        double fullHeight = 2 * viewH / correctedDist;  // полная высота объекта
+        double objHeight = fullHeight * scale ;  // желаемая высота предмета (0,5 от полной)
+        // предмет стоит на полу
+
+        double objCeiling;
+        if (isCenter) {
+            objCeiling = viewH / 2.0 - objHeight / 2.0;
+        } else {
+            double objFloor = viewH / 2.0 + viewH / correctedDist;
+            objCeiling = objFloor - objHeight;
+        }
+
+        double aspect = (double) sprite.height / sprite.width;
+        double objWidth = objHeight / aspect;
+
+        double middle =
+                (0.5 * (objAngle / (fov / 2.0)) + 0.5) * viewW;
+
+        for (int lx = 0; lx < objWidth; lx++) {
+            int column = (int) (middle + lx - objWidth / 2.0);
+            if (column < 0 || column >= viewW) continue;
+
+            //if (depthBuffer[column] < correctedDist) continue;
+
+            for (int ly = 0; ly < objHeight; ly++) {
+                int row = (int) (objCeiling + ly);
+                if (row < 0 || row >= viewH) continue;
+
+                if (depthBuffer[row][column] < correctedDist) continue;
+                double sampleX = (double) lx / objWidth;
+                double sampleY = (double) ly / objHeight;
+
+                char glyph = sprite.sampleGlyph(sampleX, sampleY);
+                if (glyph == ' ') continue;
+
+                TextColor colDraw = color != null
+                        ? color
+                        : SpriteEditor.mapColor(sprite.sampleFG(sampleX, sampleY));
+                g.setForegroundColor(colDraw);
+                g.setCharacter(column, row, glyph);
+
+                depthBuffer[row][column] = correctedDist;
+            }
+        }
+    }
+
+    private void renderFPExit(Level level, Player player) {
+        Position ep = level.getExitPosition();
+        if (ep == null) return;
+
+        //if (!fog.isVisible(ep.x, ep.y)) return;
+        if (!isVisible(ep, player, level)) return;
+
+        renderObjectSprite(player, ep, exitSprite, 0.5, null, true);
+    }
+
+    private final double[][] depthBuffer = new double[GameSettings.GAME_HEIGHT][GameSettings.GAME_WIDTH];
+
+    private AsciiSprite spriteByEnemy(Enemy enemy) {
+        return switch (enemy.getType()) {
+            case ZOMBIE -> zombieSprite;
+            case VAMPIRE -> vampireSprite;
+            case GHOST -> ghostSprite;
+            case OGRE -> ogreSprite;
+            case SNAKE_MAGE -> snakeMageSprite;
+            case MIMIC -> mimicSprite;
+        };
+    }
+
+    private AsciiSprite spriteByItem(Item item) {
+        return switch (item.getType()) {
+            case TREASURE -> goldSprite;
+            case FOOD -> foodSprite;
+            case ELIXIR -> elixirSprite;
+            case SCROLL -> scrollSprite;
+            case WEAPON -> weaponSprite;
+            case KEY -> keySprite;
+        };
+    }
 }

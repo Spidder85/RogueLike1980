@@ -22,9 +22,9 @@ public class SnakeMage extends Enemy {
     public SnakeMage(Position position) {
         super(
                 EnemyType.SNAKE_MAGE,
-                20,
-                9,
-                5,
+                28,
+                14,
+                7,
                 9,
                 position
         );
@@ -38,7 +38,7 @@ public class SnakeMage extends Enemy {
         int dy = Math.abs(ePos.y - pPos.y);
 
         // Атака только когда по диагонали вплотную
-        if ( dx == 1 && dy == 1 ) {
+        if ( dx == dy && dx <= context.getAttackRange() ) {
             return new EnemyIntent.Attack();
         }
 

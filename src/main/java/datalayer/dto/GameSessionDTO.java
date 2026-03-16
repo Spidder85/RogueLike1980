@@ -8,4 +8,5 @@ public class GameSessionDTO {
     public long worldSeed;
 
     public String viewMode;
+    public String nextLevelBalanceMode;
 }

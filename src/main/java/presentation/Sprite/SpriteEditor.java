@@ -39,6 +39,12 @@ public class SpriteEditor {
             new TextColor.RGB(255,85,255),//TextColor.ANSI.MAGENTA_BRIGHT;
             new TextColor.RGB(255,255,85),//TextColor.ANSI.YELLOW_BRIGHT;
             new TextColor.RGB(255,255,255),//TextColor.ANSI.WHITE_BRIGHT;
+            new TextColor.RGB(129,143,111),
+            new TextColor.RGB(78,114,70),
+            new TextColor.RGB(112,64,17), // brown
+            new TextColor.RGB(153,103,47),
+            new TextColor.RGB(255,170,0),   // orange
+            new TextColor.RGB(220,204,207)
 };
 
     private int canvasW = 40;
@@ -46,7 +52,7 @@ public class SpriteEditor {
 
     private int zoom = 2;
     private int offsetX = 1;
-    private int offsetY = 8;
+    private int offsetY = 9;
 
     private String currentFile = "sprite.spr";
 
@@ -63,6 +69,7 @@ public class SpriteEditor {
         screen.setCursorPosition(null);
 
         TextGraphics g = screen.newTextGraphics();
+        int paletteSize = PALETTE.length;
 
         while (true) {
             // INPUT
@@ -73,7 +80,7 @@ public class SpriteEditor {
                     if (key.getKeyType() == KeyType.Escape) {
                         resizing = false;
                         resizeInput = "";
-                        return;
+                        continue;
                     }
 
                     if (key.getKeyType() == KeyType.Enter) {
@@ -94,23 +101,23 @@ public class SpriteEditor {
 
                         resizing = false;
                         resizeInput = "";
-                        return;
+                        continue;
                     }
 
                     if (key.getKeyType() == KeyType.Backspace) {
                         if (!resizeInput.isEmpty())
                             resizeInput = resizeInput.substring(0, resizeInput.length() - 1);
-                        return;
+                        continue;
                     }
 
                     if (key.getKeyType() == KeyType.Character) {
                         char c = key.getCharacter();
                         if (Character.isDigit(c) || c == 'x')
                             resizeInput += c;
-                        return;
+                        continue;
                     }
 
-                    return;
+                    continue;
                 }
                 boolean shift = key.isShiftDown();
                 boolean alt = key.isAltDown();
@@ -187,16 +194,16 @@ public class SpriteEditor {
                 // === COLOR ===
                 if (key.getKeyType() == KeyType.Tab) {
                     if (alt) {
-                        currentBG = shift ? (currentBG + 15) % 16 : (currentBG + 1) % 16;
+                        currentBG = shift ? (currentBG + paletteSize-1) % paletteSize : (currentBG + 1) % paletteSize;
                     } else {
-                        currentFG = shift ? (currentFG + 15) % 16 : (currentFG + 1) % 16;
+                        currentFG = shift ? (currentFG + paletteSize-1) % paletteSize : (currentFG + 1) % paletteSize;
                     }
                 }
                 if (key.getKeyType() == KeyType.Character) {
-                    if (key.getCharacter() == 'q') currentFG = (currentFG + 15) % 16;
-                    if (key.getCharacter() == 'a') currentFG = (currentFG + 1) % 16;
-                    if (key.getCharacter() == 'w') currentBG = (currentBG + 15) % 16;
-                    if (key.getCharacter() == 's') currentBG = (currentBG + 1) % 16;
+                    if (key.getCharacter() == 'q') currentFG = (currentFG + paletteSize-1) % paletteSize;
+                    if (key.getCharacter() == 'a') currentFG = (currentFG + 1) % paletteSize;
+                    if (key.getCharacter() == 'w') currentBG = (currentBG + paletteSize-1) % paletteSize;
+                    if (key.getCharacter() == 's') currentBG = (currentBG + 1) % paletteSize;
                 }
 
                 // === SAVE / LOAD ===
@@ -224,6 +231,9 @@ public class SpriteEditor {
                     resizing = true;
                     resizeInput = "";
                 }
+                if (key.getKeyType() == KeyType.F12) {
+                    break;
+                }
             }
 
             /* ******************** */
@@ -245,6 +255,7 @@ public class SpriteEditor {
     }
 
     private void drawCanvas(TextGraphics g) {
+        g.setForegroundColor(TextColor.ANSI.WHITE);
         g.putString(offsetX+7, offsetY-1, "SCALE: " + zoom + ":1");
         drawFrame(offsetX, offsetX + canvasW + 1,
                   offsetY, offsetY + canvasH + 1, g);
@@ -347,8 +358,8 @@ public class SpriteEditor {
 
     private void drawPalette(TextGraphics g) {
         int px = canvasW + 8;
-
-        for (int i = 0; i < 16; i++) {
+        int paletteSize = PALETTE.length;
+        for (int i = 0; i < paletteSize; i++) {
             g.setForegroundColor(PALETTE[i]);
             g.setCharacter(px+1, i + 1 + offsetY, '█');
 
@@ -366,6 +377,7 @@ public class SpriteEditor {
     private void drawPreview(TextGraphics g) {
         int py = offsetY; //canvasH + 3 + offsetY;
         int px = canvasW + 15 + offsetX;
+        g.setForegroundColor(TextColor.ANSI.WHITE);
         g.putString(px+7, py-1, "PREVIEW 1:1");
         drawFrame(px, px + canvasW + 1,
                 py, py + canvasH + 1, g);
@@ -397,7 +409,7 @@ public class SpriteEditor {
         int sy = cursorY + scrollY;
 
         g.putString(1, y++, "ARROWS move | SHIFT+ARROWS scroll | SPACE draw | DEL erase| TAB/Q/A FG | W/S BG | PgUp/PgDn zoom");
-        g.putString(1, y++, "F1-F4 glyph | F5 new | F6 resize | F9 load | F10 save");
+        g.putString(1, y++, "F1-F4 glyph | F5 new | F6 resize | F9 load | F10 save | F12 exit");
 
         g.putString(1, y++, String.format(
                 "Glyph:%c FG:%d BG:%d Zoom:%dx",
@@ -427,7 +439,8 @@ public class SpriteEditor {
     /* ******************** */
 
     private short packColor(int fg, int bg) {
-        return (short) ((bg << 4) | (fg & 0x0F));
+        //return (short) ((bg << 4) | (fg & 0x0F));
+        return (short) ((bg << 8) | (fg & 0xFF));
     }
 
     private int clamp(int v, int min, int max) {
@@ -441,5 +454,9 @@ public class SpriteEditor {
 
     public static void main(String[] args) throws Exception {
         new SpriteEditor().run();
+    }
+
+    public static TextColor mapColor(int color) {
+        return PALETTE[color];
     }
 }

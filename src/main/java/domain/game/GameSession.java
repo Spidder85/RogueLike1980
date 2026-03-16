@@ -1,13 +1,15 @@
 package domain.game;
 
 import domain.character.Player;
+import domain.item.Item;
+import domain.item.ItemType;
 import domain.map.Level;
 import domain.map.Room;
 import domain.view.ViewMode;
 import presentation.StatusLog;
 import settings.GameSettings;
 
-import java.util.Random;
+import java.util.Objects;
 
 public class GameSession {
     private final Player player;
@@ -17,6 +19,7 @@ public class GameSession {
     private boolean finished;
 
     private ViewMode viewMode = ViewMode.TOP_DOWN;
+    private BalanceMode nextLevelBalanceMode = BalanceMode.NORMAL;
 
     private long worldSeed; // Seed для генератора случайных чисел
 
@@ -35,6 +38,7 @@ public class GameSession {
     public void setCurrentLevel(Level level) {
         this.currentLevel = level;
         stats.reachLevel(level.getIndex());
+        stats.startLevel();
     }
 
     public GameStats getStats() {
@@ -47,6 +51,8 @@ public class GameSession {
         session.worldSeed = worldSeed;
         session.currentLevel = firstLevel;
         session.finished = false;
+        session.stats.reachLevel(firstLevel.getIndex());
+        session.stats.startLevel();
 
         Room startRoom = firstLevel.startRoom;
         player.setPosition(
@@ -70,12 +76,46 @@ public class GameSession {
 //    }
 
     public void pushEvent(GameEvent e) {
-        if (e != null)
+        if (e == null) return;
+
+        if (!Objects.equals(e.getType(), "moved") &&
+            !Objects.equals(e.getType(), "blocked")) {
             statusLog.add(e);
+        }
+        statsChange(e);
+    }
+
+    private void statsChange(GameEvent e) {
+        switch (e.getType()) {
+            case "moved" -> stats.step();
+            case "hit" -> stats.damageDealt(e.getValue());
+            case "enemyHit" -> stats.damageTaken(e.getValue());
+            case "enemyKilled" -> stats.enemyKilled();
+            case "usedItem" -> {
+                switch (e.getItemType()) {
+                    case "food" -> stats.foodEaten();
+                    case "elixir" -> stats.elixirDrunk();
+                    case "scroll" -> stats.scrollRead();
+                }
+            }
+            case "pickup" -> {
+                if ("TREASURE".equals(e.getItemType())) stats.addTreasure(e.getValue());
+            }
+        }
     }
 
     public StatusLog getStatusLog() {
         return statusLog;
+    }
+
+    public BalanceMode getNextLevelBalanceMode() {
+        return nextLevelBalanceMode;
+    }
+
+    public void setNextLevelBalanceMode(BalanceMode nextLevelBalanceMode) {
+        this.nextLevelBalanceMode = nextLevelBalanceMode == null
+                ? BalanceMode.NORMAL
+                : nextLevelBalanceMode;
     }
 
     public long getWorldSeed() {

@@ -25,28 +25,35 @@ public class InputHandler {
     }
 
     public InputResult handle(KeyStroke key, GameSession session, LevelRenderer renderer) {
-        if (key.getKeyType() == KeyType.F10) {
+        if (key.getKeyType() == KeyType.F11) {
             session.toggleViewMode();
+
             return InputResult.NO_ACTION;
         }
-        if (key.getCharacter() == null) return InputResult.NO_ACTION;
+//        if (key.isAltDown() && key.isCtrlDown() && key.getCharacter() == 'f') {
+//            GameSettings.switchFOG();
+//
+//            return  InputResult.NO_ACTION;
+//        }
+        Character ch = key.getCharacter();
+        if (ch == null || ch == '\n' || ch == '\r') return InputResult.NO_ACTION;
 
         GameEvent e = null;
         boolean fp = session.isFirstPerson();
 
         switch (key.getCharacter()) {
             // движение
-            case 'w' -> e = fp ? engine.moveFP(1, 0) : engine.movePlayer(0, -1);
-            case 's' -> e = fp ? engine.moveFP(-1, 0) : engine.movePlayer(0, 1);
+            case 'w' -> e = fp ? engine.moveFP(1, 0) : engine.movePlayer(0, -1, true);
+            case 's' -> e = fp ? engine.moveFP(-1, 0) : engine.movePlayer(0, 1, true);
 
             case 'a' -> {
                 if (fp) engine.rotatePlayer(-GameSettings.FP_ROTATION);
-                else e = engine.movePlayer(-1, 0);
+                else e = engine.movePlayer(-1, 0, true);
             }
 
             case 'd' -> {
                 if (fp) engine.rotatePlayer(GameSettings.FP_ROTATION);
-                else e = engine.movePlayer(1, 0);
+                else e = engine.movePlayer(1, 0, true);
             }
             // стрейфы только в FP
             case 'z' -> {
