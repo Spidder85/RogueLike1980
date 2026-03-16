@@ -1,8 +1,6 @@
 package domain.game;
 
 import domain.character.Player;
-import domain.item.Item;
-import domain.item.ItemType;
 import domain.map.Level;
 import domain.map.Room;
 import domain.view.ViewMode;
@@ -70,16 +68,11 @@ public class GameSession {
         return !player.isAlive();
     }
 
-//    public void reset() {
-//        finished = false;
-//        currentLevel = null;
-//    }
-
     public void pushEvent(GameEvent e) {
         if (e == null) return;
 
         if (!Objects.equals(e.getType(), "moved") &&
-            !Objects.equals(e.getType(), "blocked")) {
+                !Objects.equals(e.getType(), "blocked")) {
             statusLog.add(e);
         }
         statsChange(e);

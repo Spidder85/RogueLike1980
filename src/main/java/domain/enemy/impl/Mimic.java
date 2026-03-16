@@ -64,6 +64,10 @@ public class Mimic extends Enemy {
         double dy = Math.abs(ePos.dY - pPos.dY);
         double distance = Math.sqrt(dx * dx + dy * dy);
 
+        if (!disguised && distance <= context.getAttackRange()) {
+            return new EnemyIntent.Attack();
+        }
+
         if (disguised) {    // если замаскирован
             // в радиусе атаки
             if ( distance <= context.getAttackRange()*2 && context.isPlayerVisible() ) {

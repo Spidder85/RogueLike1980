@@ -47,6 +47,15 @@ public class TurnManager {
         return true;
     }
 
+    private boolean overlaps(Position a, Position b) {
+        double colBoxSize = GameSettings.COLLISION_BOX_SIZE;
+
+        return a.dX >= b.dX - colBoxSize &&
+               a.dX <= b.dX + colBoxSize &&
+               a.dY >= b.dY - colBoxSize &&
+               a.dY <= b.dY + colBoxSize;
+    }
+
     private boolean isReachable(Position start, Position target, Level level) {
         Queue<Position> queue = new LinkedList<>();
         Set<Position> visited = new HashSet<>();
@@ -127,7 +136,7 @@ public class TurnManager {
                     double newX = enemy.getDX() + m.direction().dx * step;
                     double newY = enemy.getDY() + m.direction().dy * step;
                     Position newPos = new Position(newX, newY);
-                    if (level.isWalkable(newPos)) {
+                    if (level.isWalkable(newPos) && !overlaps(newPos, player.getPosition())) {
                         Enemy otherEnemy = level.getEnemyAt(newPos);
                         if (otherEnemy == null || otherEnemy == enemy)
                             enemy.setPosition(newPos);

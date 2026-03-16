@@ -9,6 +9,7 @@ import domain.game.GameEngine;
 import domain.game.GameEvent;
 import domain.game.GameSession;
 import settings.GameSettings;
+import settings.RenderSettings;
 
 public class InputHandler {
     private final GameEngine engine;
@@ -24,17 +25,21 @@ public class InputHandler {
         this.repository = repository;
     }
 
-    public InputResult handle(KeyStroke key, GameSession session, LevelRenderer renderer) {
+    public InputResult handle(KeyStroke key, GameSession session, LevelRenderer renderer, RenderSettings renderSettings) {
         if (key.getKeyType() == KeyType.F11) {
             session.toggleViewMode();
 
             return InputResult.NO_ACTION;
         }
-//        if (key.isAltDown() && key.isCtrlDown() && key.getCharacter() == 'f') {
-//            GameSettings.switchFOG();
-//
-//            return  InputResult.NO_ACTION;
-//        }
+
+        if (key.getKeyType() == KeyType.F1) {
+            return InputResult.HELP;
+        }
+        if (key.isAltDown() && key.isCtrlDown() && key.getCharacter() == 'f') {
+            renderSettings.toggleDebugRevealAll();
+
+            return  InputResult.NO_ACTION;
+        }
         Character ch = key.getCharacter();
         if (ch == null || ch == '\n' || ch == '\r') return InputResult.NO_ACTION;
 

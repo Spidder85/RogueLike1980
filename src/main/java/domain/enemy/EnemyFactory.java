@@ -44,7 +44,10 @@ public class EnemyFactory {
     }
 
     public static Enemy create(EnemyType type, Position position) {
-        return switch (type) {
+        return create(type, position, 1);
+    }
+    public static Enemy create(EnemyType type, Position position, int level) {
+        Enemy enemy = switch (type) {
             case ZOMBIE -> new Zombie(position);
             case VAMPIRE -> new Vampire(position);
             case GHOST -> new Ghost(position);
@@ -52,5 +55,56 @@ public class EnemyFactory {
             case SNAKE_MAGE -> new SnakeMage(position);
             case MIMIC -> new Mimic(position);
         };
+
+        scaleEnemy(enemy, level);
+        return enemy;
+    }
+
+    private static void scaleEnemy(Enemy enemy, int level) {
+        int tier = Math.max(0, level - 1);
+
+        int hp = enemy.getMaxHealth();
+        int agility = enemy.getAgility();
+        int strength = enemy.getStrength();
+        int hostility = enemy.getHostility();
+
+        switch (enemy.getType()) {
+            case ZOMBIE -> {
+                hp += tier * 2;
+                strength += tier / 5;
+            }
+            case VAMPIRE -> {
+                hp += tier;
+                strength += tier / 6;
+                agility += tier / 5;
+            }
+            case GHOST -> {
+                hp += tier;
+                agility += tier / 5;
+            }
+            case OGRE -> {
+                hp += tier * 3;
+                strength += tier / 4;
+            }
+            case SNAKE_MAGE -> {
+                hp += tier;
+                strength += tier / 6;
+                agility += tier / 5;
+            }
+            case MIMIC -> {
+                hp += tier * 2;
+                strength += tier / 6;
+                agility += tier / 6;
+            }
+        }
+
+        enemy.restore(
+                hp,
+                hp,
+                agility,
+                strength,
+                hostility,
+                enemy.getPosition()
+        );
     }
 }

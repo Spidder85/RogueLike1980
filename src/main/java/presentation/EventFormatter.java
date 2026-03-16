@@ -9,7 +9,7 @@ public class EventFormatter {
             case "moved" -> "Игрок переместился";
             case "blocked" -> "Путь заблокирован";
 
-            case "pickup" -> "Игрок поднял " + e.getItemType();
+            case "pickup" -> "Игрок поднял " + formatItemName(e.getItemType());
             case "hit" -> "Игрок атаковал " + e.getItemType() + " и нанёс " + e.getValue() + " урона";
             case "miss" -> "Игрок промахнулся";
             case "enemyMiss" -> e.getItemType() + " промахнулся";
@@ -26,12 +26,26 @@ public class EventFormatter {
             case "vampireDrain" -> "Вампир поглощает " + e.getValue() + " здоровья";
             case "snakeMagePutToSleep" -> "Змей маг усыпил игрока";
 
-           case "doorOpened" -> "Дверь " + e.getItemType() + " открыта";
+            case "doorOpened" -> "Дверь " + e.getItemType() + " открыта";
             case "doorLocked" -> "Дверь " + e.getItemType() + " закрыта";
             case "key" -> "Ключ " + e.getItemType() + " найден";
 
+            case "inventoryFull" -> "Инвентарь полон, предмет не поднят";
+
 
             default -> "Произошло что-то странное...";
+        };
+    }
+
+    private static String formatItemName(String itemType) {
+        return switch (itemType) {
+            case "TREASURE" -> "золото";
+            case "FOOD" -> "еду";
+            case "ELIXIR" -> "эликсир";
+            case "SCROLL" -> "свиток";
+            case "WEAPON" -> "оружие";
+            case "KEY" -> "ключ";
+            default -> itemType;
         };
     }
 }

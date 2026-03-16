@@ -21,7 +21,7 @@ public class InventoryView {
         boolean isWeapon = type == ItemType.WEAPON && player.getCurrentWeapon() != null;
         if (items.isEmpty() && !isWeapon) return null;
 
-        draw(items, type);
+        draw(items, type, player);
 
         while (true) {
             try {
@@ -35,7 +35,7 @@ public class InventoryView {
                     continue;
                 char c = key.getCharacter();
 
-                if (type == ItemType.WEAPON && c == '0')
+                if (type == ItemType.WEAPON && c == '0' && player.getCurrentWeapon() != null)
                     return -1;  // убрать оружие
 
                 int index = c - '1';
@@ -46,7 +46,7 @@ public class InventoryView {
         }
     }
 
-    private void draw(List<Item> items, ItemType type) {
+    private void draw(List<Item> items, ItemType type, Player player) {
         screen.clear();
         var g = screen.newTextGraphics();
 
@@ -54,18 +54,11 @@ public class InventoryView {
 
         int y = 3;
         int idx = 1;
-        if (type == ItemType.WEAPON) {
+        if (type == ItemType.WEAPON && player.getCurrentWeapon() != null) {
             g.putString(5, y++, "0: Убрать оружие");
         }
         for (Item it : items) {
-//            String str = (idx++) + ": " + it.getType() +
-//                    (it.getMaxHealth() > 0 ? " (+ " + it.getMaxHealth() + " max HP)" : "") +
-//                    (it.getHealth() > 0 ? " (+ " + it.getHealth() + " HP)" : "") +
-//                    (it.getAgility() > 0 ? " (+ " + it.getAgility() + " Agility)" : "") +
-//                    (it.getStrength() > 0 ? " (+ " + it.getStrength() + " Strength)" : "") +
-//                    (it.getDuration() > 0 ? " : " + it.getDuration() + " Duration" : "");
             String str = (idx++) + ": " + Item.toString(it);
-            //g.putString(5, y++, str);
             g.putString(5, y++, str);
         }
 

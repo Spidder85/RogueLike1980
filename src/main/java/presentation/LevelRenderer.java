@@ -19,6 +19,7 @@ import domain.map.Room;
 import presentation.Sprite.AsciiSprite;
 import presentation.Sprite.SpriteEditor;
 import settings.GameSettings;
+import settings.RenderSettings;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,22 +64,25 @@ public class LevelRenderer {
         );
     }
 
-    public void render(Level level, GameSession session) {
+    public void render(Level level, GameSession session, RenderSettings renderSettings) {
         screen.clear();
+        boolean revealAll = !GameSettings.ENABLE_FOG_OF_WAR || renderSettings.isDebugRevealAll();
+        fog.setDebugRevealAll(revealAll);
         if (session.isTopDown())
-            renderTopDown(level, session, new Position(0,0), 1.0);
+            renderTopDown(level, session, new Position(0,0), 1.0, renderSettings);
         else
-            renderFirstPerson(level, session);
+            renderFirstPerson(level, session, renderSettings);
     }
 
-    public void renderTopDown(Level level, GameSession session, Position offset, double scale) {
+    public void renderTopDown(Level level, GameSession session, Position offset, double scale, RenderSettings renderSettings) {
         Player player = session.getPlayer();
         fog.computeVisibility(player, GameSettings.FOG_RADIUS, level);
 
         drawRooms(level, player, offset, scale);
         drawCorridors(level, offset, scale);
-        drawItems(level, player, offset, scale);
-        drawEnemies(level, player, offset, scale);
+        drawDoors(level, offset, scale);
+        drawItems(level, player, offset, scale, renderSettings);
+        drawEnemies(level, player, offset, scale, renderSettings);
 
         String symbol = "☻";
         if (session.isFirstPerson()) {
@@ -123,7 +127,6 @@ public class LevelRenderer {
             for (int y = room.y + 1; y < room.y + room.height - 1; y++) {
                 for (int x = room.x + 1; x < room.x + room.width - 1; x++) {
                     putScaled(new Position(x, y), "∙", offset, scale);
-                    //g.putString(x, y, "∙");
                 }
             }
         }
@@ -145,21 +148,24 @@ public class LevelRenderer {
         if (fog.wasVisited(x2, y1)) putScaled(new Position(x2,y1), "╗", offset, scale);
         if (fog.wasVisited(x1, y2)) putScaled(new Position(x1,y2), "╚", offset, scale);
         if (fog.wasVisited(x2, y2)) putScaled(new Position(x2,y2), "╝", offset, scale);
+    }
 
+    private void drawDoors(Level level, Position offset, double scale) {
         // двери
-        for (Position p : room.doors) {
-            g.setForegroundColor(TextColor.ANSI.YELLOW);
-            if (!fog.wasVisited(p.x, p.y)) continue;
-            DoorMeta door = level.getDoorAt(p);
-            if (door == null) {
-                putScaled(p, "╬", offset, scale);
-            } else {
-                g.setForegroundColor(door.getColor().toColor());
-                putScaled(p, "▣", offset, scale);
+        for (Room room : level.getRooms()) {
+            for (Position p : room.doors) {
+                if (!fog.wasVisited(p.x, p.y)) continue;
+
+                DoorMeta door = level.getDoorAt(p);
+                if (door == null) {
+                    g.setForegroundColor(TextColor.ANSI.YELLOW);
+                    putScaled(p, "╬", offset, scale);
+                } else {
+                    g.setForegroundColor(door.getColor().toColor());
+                    putScaled(p, "▣", offset, scale);
+                }
             }
         }
-
-
     }
 
     private void drawCorridors(Level level, Position offset, double scale) {
@@ -174,15 +180,15 @@ public class LevelRenderer {
         }
     }
 
-    private void drawEnemies(Level level, Player player, Position offset, double scale) {
-        Position pp = player.getPosition();
+    private void drawEnemies(Level level, Player player, Position offset, double scale, RenderSettings renderSettings) {
+        boolean hidByFog = GameSettings.ENABLE_FOG_OF_WAR && !renderSettings.isDebugRevealAll();
 
         for (Enemy enemy : level.getEnemies()) {
             Position p = enemy.getPosition();
 
             if (!fog.wasVisited(p.x, p.y) ) continue;
 
-            if (!isVisible(p, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
+            if (hidByFog && !isVisible(p, player, level)) continue;
             if (enemy instanceof Ghost ghost && ghost.isInvisible()) continue;
             if (enemy instanceof Mimic mimic && mimic.isDisguised()) {
                 drawItem(mimic.getDisguiseItem(), p, offset, scale);
@@ -193,14 +199,15 @@ public class LevelRenderer {
         }
     }
 
-    private void drawItems(Level level, Player player, Position offset, double scale) {
+    private void drawItems(Level level, Player player, Position offset, double scale, RenderSettings renderSettings) {
+        boolean hidByFog = GameSettings.ENABLE_FOG_OF_WAR && !renderSettings.isDebugRevealAll();
         for (Item item : level.getItems()) {
             Position p = item.getPosition();
 
             // скрыто туманом
             if (!fog.wasVisited(p.x, p.y)) continue;
 
-            if (!isVisible(p, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
+            if (hidByFog && !isVisible(p, player, level)) continue;
 
             drawItem(item, p, offset, scale);
         }
@@ -283,7 +290,7 @@ public class LevelRenderer {
         };
     }
 
-    private void renderFirstPerson(Level level, GameSession session) {
+    private void renderFirstPerson(Level level, GameSession session, RenderSettings renderSettings) {
         Player player = session.getPlayer();
         fog.computeVisibility(player, GameSettings.FOG_RADIUS, level);
 
@@ -293,7 +300,7 @@ public class LevelRenderer {
         renderFPEnemies(level, player);
 
         int x = screen.getTerminalSize().getColumns() - (int)Math.floor(GameSettings.MINIMAP_SCALE*GameSettings.GAME_WIDTH)-1;
-        renderTopDown(level,session, new Position(x, 1), GameSettings.MINIMAP_SCALE);
+        renderTopDown(level,session, new Position(x, 1), GameSettings.MINIMAP_SCALE, renderSettings);
 
         stats.renderStatusLog(session.getStatusLog());
         stats.render(session);
@@ -389,12 +396,19 @@ public class LevelRenderer {
                 double vy = testY + ty - posY;
 
                 double d = Math.sqrt(vx * vx + vy * vy);
+                if (d <= 1e-9) {
+                    continue;
+                }
                 double dot = (eyeX * vx / d) + (eyeY * vy / d);
+                dot = Math.max(-1.0, Math.min(1.0, dot));
 
                 corner.add(new double[]{d, dot});
             }
         }
         corner.sort(Comparator.comparingDouble(a -> a[0]));
+        if (corner.size() < 2) {
+            return false;
+        }
 
         double bound = 0.005;
 
@@ -422,8 +436,8 @@ public class LevelRenderer {
             Position ip = item.getPosition();
 
             // скрыто туманом
-            if (!fog.wasVisited(ip.x, ip.y)) continue;
-            if (!isVisible(ip, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
+            //if (!fog.wasVisited(ip.x, ip.y)) continue;
+            if (!isVisible(ip, player, level)) continue;
 
             AsciiSprite sprite = spriteByItem(item);
             TextColor color =
@@ -438,8 +452,8 @@ public class LevelRenderer {
         for (Enemy enemy : level.getEnemies()) {
             Position ep = enemy.getPosition();
 
-            if (!fog.isVisible(ep.x, ep.y)) continue;
-            if (!isVisible(ep, player, level) && GameSettings.ENABLE_FOG_OF_WAR) continue;
+            //if (!fog.isVisible(ep.x, ep.y)) continue;
+            if (!isVisible(ep, player, level)) continue;
             if (enemy instanceof Ghost ghost && ghost.isInvisible()) continue;
 
             if (enemy instanceof Mimic mimic && mimic.isDisguised()) {

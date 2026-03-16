@@ -111,9 +111,10 @@ public class GameEngine {
 
         Position newPos = new Position(newX, newY);
 
-        Object obj = currentLevel.getObjectAt(newPos, byCell);
+        Position lookupPos = byCell ? new Position(newPos.x, newPos.y) : newPos;
 
-        if (obj instanceof DoorMeta door) {
+        DoorMeta door = currentLevel.getDoorAt(lookupPos);
+        if (door != null) {
             Backpack bp = player.getBackpack();
             if (bp.hasKey(door.getColor())) {
                 bp.useKey(door.getColor()); // тратим ключ
@@ -130,7 +131,8 @@ public class GameEngine {
             return new GameEvent("blocked", 0, "");
         }
 
-        if (obj instanceof Enemy enemy) {   // если "наступили" на врага
+        Enemy enemy = currentLevel.getEnemyAt(lookupPos);
+        if (enemy != null) {   // если "наступили" на врага
             double hitChance = (double) player.getAgility() / (enemy.getAgility() + player.getAgility());
             boolean isHit = Math.random() <= hitChance;
             // расчет урона с долей случайности
@@ -155,25 +157,35 @@ public class GameEngine {
 
         player.setPosition(newX, newY);
 
-        if (obj instanceof Item item) { // если "наступили" на предмет
-            if(item.getType() == ItemType.KEY) {
-                player.getBackpack().addKey(item.getKeyColor());
-                currentLevel.removeItem(item);
-                return new GameEvent("key", item.getCost(), item.getSubtype());
-            }else {
-                boolean picked = player.getBackpack().addItem(item);
-                if (picked)
-                    currentLevel.removeItem(item);
-                return new GameEvent("pickup", item.getCost(), item.getType().name());
-            }
-        }
-
         if (currentLevel.isExit(newPos)) {  // если "наступили" на выход
             return goToNextLevel();
         }
 
-        //session.getStats().step();
-        return new GameEvent("moved", 0,"");
+        List<Item> itemsAtCell = new ArrayList<>(currentLevel.getItemsAt(lookupPos));
+        List<GameEvent> events = new ArrayList<>();
+
+        for (Item item : itemsAtCell) { // обработка всех предметов лежащих в одной клетке
+            if(item.getType() == ItemType.KEY) {
+                player.getBackpack().addKey(item.getKeyColor());
+                currentLevel.removeItem(item);
+                events.add(new GameEvent("key", item.getCost(), item.getSubtype()));
+            }else {
+                boolean picked = player.getBackpack().addItem(item);
+                if (picked) {
+                    currentLevel.removeItem(item);
+                    events.add(new GameEvent("pickup", item.getCost(), item.getType().name()));
+                } else {
+                    events.add(new GameEvent("inventoryFull", 0, item.getType().name()));
+                }
+            }
+        }
+        if (events.isEmpty())
+            return new GameEvent("moved", 0,"");
+
+        for (int i = 0; i < events.size() - 1; i++) {
+            session.pushEvent(events.get(i));
+        }
+        return events.getLast();
     }
 
     public void nextTurn() {

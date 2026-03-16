@@ -38,7 +38,7 @@ public class ItemFactory {
                         stat.equals("agility") ? 2 + random.nextInt(2) : 0,
                         stat.equals("strength") ? 2 + random.nextInt(2) : 0,
                         0,
-                        4
+                        4 + random.nextInt(2)
                 );
             }
             case SCROLL -> {
@@ -47,9 +47,9 @@ public class ItemFactory {
                         ItemType.SCROLL,
                         stat,
                         0,
-                        stat.equals("maxHealth") ? 5 + level/5 + random.nextInt(2) : 0,
-                        stat.equals("agility") ? 1 + level/10 + random.nextInt(2) : 0,
-                        stat.equals("strength") ? 1 + level/10 + random.nextInt(2) : 0,
+                        stat.equals("maxHealth") ? 3 + level/8 + random.nextInt(2) : 0,
+                        stat.equals("agility") ? 1 + level/14 + random.nextInt(2) : 0,
+                        stat.equals("strength") ? 1 + level/14 + random.nextInt(2) : 0,
                         0,
                         0
                 );
@@ -58,7 +58,7 @@ public class ItemFactory {
                     ItemType.WEAPON,
                     "weapon",
                     0,0,0,
-                    5 + level / 3 + random.nextInt(3),
+                    4 + level / 4 + random.nextInt(3),
                     0,
                     0
             );

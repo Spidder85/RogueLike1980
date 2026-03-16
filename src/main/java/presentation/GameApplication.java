@@ -21,6 +21,7 @@ import settings.GameSettings;
 
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import settings.RenderSettings;
 
 import java.util.List;
 
@@ -92,6 +93,7 @@ public class GameApplication {
             GameSession session = engine.getSession();
 
             LevelRenderer renderer = new LevelRenderer(screen);
+            RenderSettings renderSettings = new RenderSettings();
 
             InventoryView inventoryView = new InventoryView(screen);
             InputHandler inputHandler = new InputHandler(engine, inventoryView, repo);
@@ -100,17 +102,20 @@ public class GameApplication {
             while (running && !session.isFinished() && !session.isGameOver()) {
                 Level level = session.getCurrentLevel();
 
-                renderer.render(level, session);
+                renderer.render(level, session, renderSettings);
                 screen.refresh();
 
                 KeyStroke key = screen.readInput();
                 if (key == null) continue;
 
-                InputResult result = inputHandler.handle(key, session, renderer);
+                InputResult result = inputHandler.handle(key, session, renderer, renderSettings);
                 if (result == InputResult.EXIT)
                     running = false;
                 else if (result == InputResult.ACTION)
                     engine.nextTurn();
+                else if (result == InputResult.HELP) {
+                    HelpView.show(screen);
+                }
             }
             if(session.isFinished() || session.isGameOver()) {
                 scoreRepo.addSession(SessionScore.fromGameSession(session.getStats(), session.getPlayer()));

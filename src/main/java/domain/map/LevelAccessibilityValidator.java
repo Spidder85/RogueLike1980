@@ -36,14 +36,17 @@ public class LevelAccessibilityValidator {
                 Position nPos = new Position(nx, ny);
                 int mask = cur.mask;
 
-                if (!level.isWalkable(nPos)) continue;
-
+                //if (!level.isWalkable(nPos)) continue;
                 DoorMeta door = level.getDoorAt(nPos);
                 if (door != null) {
-                    if ((mask & door.getColor().bit()) == 0) continue;
+                    if ((mask & door.getColor().bit()) == 0) {
+                        continue;
+                    }
+                } else if (!level.isWalkable(nPos)) {
+                    continue;
                 }
 
-                Item item = level.getItemAt(new Position(nx, ny));
+                Item item = level.getItemAt(nPos);
                 if (item != null && item.getType() == ItemType.KEY) {
                     mask |= item.getKeyColor().bit();
                 }

@@ -24,6 +24,7 @@ public class FogOfWar {
                 }
             }
         }
+        setDebugRevealAll(!GameSettings.ENABLE_FOG_OF_WAR);
     }
 
     public void clearVisible() {
@@ -34,12 +35,17 @@ public class FogOfWar {
         }
     }
 
+    private boolean debugRevealAll;
+    public void setDebugRevealAll(boolean value) {
+        debugRevealAll = value;
+    }
+
     public boolean isVisible(int x, int y) {
         return inBounds(x, y) && visible[y][x];
     }
 
     public boolean wasVisited(int x, int y) {
-        return inBounds(x, y) && visited[y][x];
+        return debugRevealAll || (inBounds(x, y) && visited[y][x]);
     }
 
     private boolean inBounds(int x, int y) {

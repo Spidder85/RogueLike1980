@@ -82,7 +82,8 @@ public class LevelGenerator {
                         (1 + Math.log(levelNumber + 1))
                     )
             );
-            int itemCount = Math.max(1, scaleCount(random.nextInt(maxItems) + 1, balanceMode, false));
+            //int itemCount = Math.max(1, scaleCount(random.nextInt(maxItems) + 1, balanceMode, false));
+            int itemCount = scaleCount(random.nextInt(maxItems + 1), balanceMode, true);
             for (int i = 0; i < itemCount; i++) {
                 Item item = ItemFactory.randomItem(levelNumber, balanceMode, random);
                 Position p = room.getRandomFreePoint(

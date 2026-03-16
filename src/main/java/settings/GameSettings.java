@@ -43,7 +43,4 @@ public final class GameSettings {
 
     private GameSettings() {}
 
-    public static void switchFOG() {
-        ENABLE_FOG_OF_WAR = !ENABLE_FOG_OF_WAR;
-    }
 }

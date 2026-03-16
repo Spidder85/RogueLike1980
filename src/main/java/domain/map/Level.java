@@ -131,6 +131,12 @@ public class Level {
                 .orElse(null);
     }
 
+    public List<Item> getItemsAt(Position p) {
+        return items.stream()
+                .filter(e -> inCollisionBox(e.getPosition(), p))
+                .toList();
+    }
+
     private boolean inCollisionBox(Position pObj, Position pCheck) {
         double colBoxSize = GameSettings.COLLISION_BOX_SIZE;
 

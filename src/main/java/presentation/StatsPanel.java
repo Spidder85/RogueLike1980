@@ -78,6 +78,7 @@ public class StatsPanel {
         g.putString(x, yy++,"K - Использовать эликсир");
         g.putString(x, yy++,"E - Использовать свиток");
         g.putString(x, yy++,"F11 - Сменить вид");
+        g.putString(x, yy++,"F1 - Помощь/обозначение");
         g.putString(x, yy++,"Q - Выход");
 
 
