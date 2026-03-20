@@ -190,6 +190,8 @@ public class GameEngine {
 
     public void nextTurn() {
         List<GameEvent> events = turnManager.nextTurn(session);
+        Player player = session.getPlayer();
+        player.update();
         for (GameEvent e : events) {
             session.pushEvent(e);
         }
