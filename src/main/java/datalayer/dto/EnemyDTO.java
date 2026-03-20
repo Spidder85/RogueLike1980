@@ -1,13 +1,13 @@
 package datalayer.dto;
 
-public class EnemyDTO {
-    public String type;      // EnemyType.name()
-    public int x;
-    public int y;
+public record EnemyDTO (
+    String type,      // EnemyType.name()
+    int x,
+    int y,
 
-    public int health;
-    public int maxHealth;
-    public int agility;
-    public int strength;
-    public int hostility;
-}
+    int health,
+    int maxHealth,
+    int agility,
+    int strength,
+    int hostility
+){}

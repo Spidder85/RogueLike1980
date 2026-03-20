@@ -1,9 +1,9 @@
 package datalayer.mapper;
 
 import datalayer.dto.DoorDTO;
-import datalayer.dto.LevelDTO;
 import datalayer.dto.EnemyDTO;
 import datalayer.dto.ItemDTO;
+import datalayer.dto.LevelDTO;
 import domain.common.Position;
 import domain.enemy.Enemy;
 import domain.item.KeyColor;
@@ -25,11 +25,11 @@ public class LevelMapper {
         dto.exitPosition = level.getExitPosition();
 
         dto.doors = level.getDoors().stream().map(d -> {
-            DoorDTO dd = new DoorDTO();
-            dd.x = d.getPosition().x;
-            dd.y = d.getPosition().y;
-            dd.color = d.getColor().name();
-            //dd.open = d.isOpen();
+            DoorDTO dd = new DoorDTO(
+                d.getPosition().x,
+                d.getPosition().y,
+                d.getColor().name()
+            );
             return dd;
         }).toList();
 
@@ -53,7 +53,7 @@ public class LevelMapper {
         }
 
         for (DoorDTO dd : dto.doors) {
-            DoorMeta door = new DoorMeta(new Position(dd.x,dd.y), KeyColor.valueOf(dd.color));
+            DoorMeta door = new DoorMeta(new Position(dd.x(),dd.y()), KeyColor.valueOf(dd.color()));
             //if (dd.open) door.open();
 
             level.addDoor(door);

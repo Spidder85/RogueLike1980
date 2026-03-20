@@ -9,43 +9,43 @@ import domain.item.KeyColor;
 public class ItemMapper {
 
     public static ItemDTO toDTO(Item i) {
-        ItemDTO dto = new ItemDTO();
+        String keyColor = i.getType() == ItemType.KEY && i.getKeyColor() != null
+            ? i.getKeyColor().name()
+            : null;
 
-        dto.type = i.getType().name();
-        dto.subtype = i.getSubtype();
+        return new ItemDTO(
+            i.getType().name(),
+            i.getSubtype(),
 
-        dto.health = i.getHealth();
-        dto.maxHealth = i.getMaxHealth();
-        dto.agility = i.getAgility();
-        dto.strength = i.getStrength();
-        dto.cost = i.getCost();
-        dto.duration = i.getDuration();
+            i.getHealth(),
+            i.getMaxHealth(),
+            i.getAgility(),
+            i.getStrength(),
+            i.getCost(),
+            i.getDuration(),
 
-        dto.x = i.getX();
-        dto.y = i.getY();
+            i.getX(),
+            i.getY(),
 
-        if (i.getType() == ItemType.KEY && i.getKeyColor() != null) {
-            dto.keyColor = i.getKeyColor().name();
-        }
-
-        return dto;
+            keyColor
+        );
     }
 
     public static Item fromDTO(ItemDTO dto) {
         Item item = new Item(
-                ItemType.valueOf(dto.type),
-                dto.subtype,
-                dto.health,
-                dto.maxHealth,
-                dto.agility,
-                dto.strength,
-                dto.cost,
-                dto.duration
+                ItemType.valueOf(dto.type()),
+                dto.subtype(),
+                dto.health(),
+                dto.maxHealth(),
+                dto.agility(),
+                dto.strength(),
+                dto.cost(),
+                dto.duration()
         );
-        if (dto.keyColor != null)
-            item.setKeyColor(KeyColor.valueOf(dto.keyColor));
+        if (dto.keyColor() != null)
+            item.setKeyColor(KeyColor.valueOf(dto.keyColor()));
 
-        item.setPosition(new Position(dto.x, dto.y));
+        item.setPosition(new Position(dto.x(), dto.y()));
         return item;
     }
 }

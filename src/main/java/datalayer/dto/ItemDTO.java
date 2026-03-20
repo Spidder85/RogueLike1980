@@ -1,18 +1,18 @@
 package datalayer.dto;
 
-public class ItemDTO {
-    public String type; // ItemType.name()
-    public String subtype;
+public record ItemDTO (
+    String type,
+    String subtype,
 
-    public int health;
-    public int maxHealth;
-    public int agility;
-    public int strength;
-    public int cost;
-    public int duration;
+    int health,
+    int maxHealth,
+    int agility,
+    int strength,
+    int cost,
+    int duration,
 
-    public int x;
-    public int y;
+    int x,
+    int y,
 
-    public String keyColor;
-}
+    String keyColor
+ ) {}
