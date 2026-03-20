@@ -1,12 +1,12 @@
 package datalayer.dto;
 
-public class GameSessionDTO {
-    public PlayerDTO player;
-    public GameStatsDTO stats;
-    public LevelDTO level;
+public record GameSessionDTO (
+    PlayerDTO player,
+    GameStatsDTO stats,
+    LevelDTO level,
 
-    public long worldSeed;
+    long worldSeed,
 
-    public String viewMode;
-    public String nextLevelBalanceMode;
-}
+    String viewMode,
+    String nextLevelBalanceMode
+){}

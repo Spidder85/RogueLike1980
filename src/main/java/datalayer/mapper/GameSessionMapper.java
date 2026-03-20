@@ -9,32 +9,31 @@ import domain.view.ViewMode;
 
 public class GameSessionMapper {
     public static GameSessionDTO toDTO(GameSession session) {
-        GameSessionDTO dto = new GameSessionDTO();
-        dto.player = PlayerMapper.toDTO(session.getPlayer());
-        dto.stats = GameStatsMapper.toDTO(session.getStats());
-        dto.level = LevelMapper.toDTO(session.getCurrentLevel());
-        dto.worldSeed = session.getWorldSeed();
-        dto.viewMode = session.getViewMode().name();
-        dto.nextLevelBalanceMode = session.getNextLevelBalanceMode().name();
-
-        return dto;
+        return new GameSessionDTO(
+            PlayerMapper.toDTO(session.getPlayer()),
+            GameStatsMapper.toDTO(session.getStats()),
+            LevelMapper.toDTO(session.getCurrentLevel()),
+            session.getWorldSeed(),
+            session.getViewMode().name(),
+            session.getNextLevelBalanceMode().name()
+        );
     }
 
     public static GameSession fromDTO(GameSessionDTO dto) {
-        Player player = PlayerMapper.fromDTO(dto.player);
+        Player player = PlayerMapper.fromDTO(dto.player());
 
         GameSession session = new GameSession(player);
-        session.setWorldSeed(dto.worldSeed);
+        session.setWorldSeed(dto.worldSeed());
 
-        Level level = LevelMapper.fromDTO(dto.level, dto.worldSeed);
+        Level level = LevelMapper.fromDTO(dto.level(), dto.worldSeed());
         session.setCurrentLevel(level);
-        GameStatsMapper.fromDTO(dto.stats, session.getStats());
+        GameStatsMapper.fromDTO(dto.stats(), session.getStats());
 
-        if (dto.viewMode != null) {
-            session.setViewMode(ViewMode.valueOf(dto.viewMode));
+        if (dto.viewMode() != null) {
+            session.setViewMode(ViewMode.valueOf(dto.viewMode()));
         }
-        if (dto.nextLevelBalanceMode != null) {
-            session.setNextLevelBalanceMode(BalanceMode.valueOf(dto.nextLevelBalanceMode));
+        if (dto.nextLevelBalanceMode() != null) {
+            session.setNextLevelBalanceMode(BalanceMode.valueOf(dto.nextLevelBalanceMode()));
         }
 
         return session;

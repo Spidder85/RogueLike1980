@@ -14,47 +14,43 @@ import domain.map.LevelGenerator;
 public class LevelMapper {
 
     public static LevelDTO toDTO(Level level) {
-        LevelDTO dto = new LevelDTO();
-        dto.levelIndex = level.getIndex();
-        dto.enemies = level.getEnemies().stream()
-                .map(EnemyMapper::toDTO)
-                .toList();
-        dto.items = level.getItems().stream()
-                .map(ItemMapper::toDTO)
-                .toList();
-        dto.exitPosition = level.getExitPosition();
 
-        dto.doors = level.getDoors().stream().map(d -> {
-            DoorDTO dd = new DoorDTO(
+        return new LevelDTO(
+            level.getIndex(),
+            level.getEnemies().stream()
+                    .map(EnemyMapper::toDTO)
+                    .toList(),
+            level.getItems().stream()
+                    .map(ItemMapper::toDTO)
+                    .toList(),
+            level.getExitPosition(),
+
+            level.getDoors().stream().map(d -> new DoorDTO(
                 d.getPosition().x,
                 d.getPosition().y,
                 d.getColor().name()
-            );
-            return dd;
-        }).toList();
-
-        return dto;
+            )).toList()
+        );
     }
 
     public static Level fromDTO(LevelDTO dto, long worldSeed) {
-        Level level = LevelGenerator.generate(dto.levelIndex, worldSeed);
+        Level level = LevelGenerator.generate(dto.levelIndex(), worldSeed);
 
         level.getEnemies().clear();
         level.getItems().clear();
 
-        for (EnemyDTO e : dto.enemies) {
+        for (EnemyDTO e : dto.enemies()) {
             Enemy enemy = EnemyMapper.fromDTO(e);
             level.addEnemy(enemy);
         }
 
         level.clearDoorsAndKeys();
-        for (ItemDTO i : dto.items) {
+        for (ItemDTO i : dto.items()) {
             level.addItem(ItemMapper.fromDTO(i));
         }
 
-        for (DoorDTO dd : dto.doors) {
+        for (DoorDTO dd : dto.doors()) {
             DoorMeta door = new DoorMeta(new Position(dd.x(),dd.y()), KeyColor.valueOf(dd.color()));
-            //if (dd.open) door.open();
 
             level.addDoor(door);
         }

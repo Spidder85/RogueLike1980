@@ -1,15 +1,15 @@
 package datalayer.dto;
 
-public class PlayerDTO {
-    public int maxHealth;
-    public int health;
-    public int agility;
-    public int strength;
+public record PlayerDTO (
+    int maxHealth,
+    int health,
+    int agility,
+    int strength,
 
-    public ItemDTO currentWeapon;
+    ItemDTO currentWeapon,
 
-    public int x;
-    public int y;
+    int x,
+    int y,
 
-    public BackpackDTO backpack;
-}
+    BackpackDTO backpack
+){}
